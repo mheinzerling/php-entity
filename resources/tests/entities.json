@@ -1,0 +1,46 @@
+{
+  "gensrc": "gensrc",
+  "src": "src",
+  "entities": {
+    "Credential": {
+      "namespace": "mheinzerling\\test",
+      "provider": {
+        "type": "String",
+        "length": 255,
+        "primary": true
+      },
+      "uid": {
+        "type": "String",
+        "length": 255,
+        "primary": true
+      },
+      "user": {
+        "type": "User",
+        "optional": true
+      }
+    },
+    "User": {
+      "namespace": "mheinzerling\\test2",
+      "unique": {
+        "nick": [
+          "nick"
+        ]
+      },
+      "id": {
+        "type": "Integer",
+        "auto": true,
+        "primary": true
+      },
+      "nick": {
+        "type": "String",
+        "length": 100
+      },
+      "birthday": {
+        "type": "\\DateTime",
+        "optional": true
+      }
+    }
+  }
+}
+
+
