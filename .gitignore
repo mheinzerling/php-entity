@@ -1,4 +1,5 @@
 /.idea
 /ci
 /vendor
-/composer.phar
+/resources/tests/gensrc
+/resources/tests/src

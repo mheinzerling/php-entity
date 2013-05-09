@@ -13,9 +13,7 @@ class PhpSnippetsTest extends \PHPUnit_Framework_TestCase
         $expected = '<?php
 namespace foo\foo;
 
-use mheinzerling\entity\EntityRepository;
-
-class FooRepository extends EntityRepository
+class FooRepository extends BaseFooRepository
 {
 }';
         $this->assertEquals($expected, $actual);
@@ -25,9 +23,7 @@ class FooRepository extends EntityRepository
     {
         $actual = PhpSnippets::repository("Foo", "");
         $expected = '<?php
-use mheinzerling\entity\EntityRepository;
-
-class FooRepository extends EntityRepository
+class FooRepository extends BaseFooRepository
 {
 }';
         $this->assertEquals($expected, $actual);
@@ -51,40 +47,77 @@ class Foo extends BaseFoo
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
-        $actual = PhpSnippets::metadata('Credential', $json['entities']['Credential']);
+        $actual = PhpSnippets::baserepository('Credential', $json['entities']['Credential']);
+
         $expected = "<?php
-return array(
-    'name' => 'Credential',
-    'repoClass' => 'mheinzerling\\test\\CredentialRepository',
-    'baseClass' => 'mheinzerling\\test\\BaseCredential',
-    'entityClass' => 'mheinzerling\\test\\Credential',
-    'namespace' => 'mheinzerling\\test',
-    'table' => 'credential',
-    'fields' => array(
-        'provider' => array('type' => 'String', 'length' => 255, 'primary' => true),
-        'uid' => array('type' => 'String', 'length' => 255, 'primary' => true),
-        'user' => array('type' => '\\mheinzerling\\test2\\User', 'optional' => true)),
-    'pk' => array('provider', 'uid'),
-    'autoincrement' => null
-);";
+namespace mheinzerling\\test;
+
+use mheinzerling\\entity\\EntityRepository;
+
+class BaseCredentialRepository extends EntityRepository
+{
+    public function getMeta()
+    {
+        return array(
+            'name' => 'Credential',
+            'repoClass' => 'mheinzerling\\test\\CredentialRepository',
+            'baseClass' => 'mheinzerling\\test\\BaseCredential',
+            'entityClass' => 'mheinzerling\\test\\Credential',
+            'namespace' => 'mheinzerling\\test',
+            'table' => 'credential',
+            'fields' => array(
+                'provider' => array('type' => 'String', 'length' => 255, 'primary' => true),
+                'uid' => array('type' => 'String', 'length' => 255, 'primary' => true),
+                'user' => array('type' => '\\mheinzerling\\test2\\User', 'optional' => true)),
+            'pk' => array('provider', 'uid'),
+            'autoincrement' => null
+        );
+    }
+
+    /**
+     * @return Credential
+     */
+    public function fetchByProviderAndUid(\$provider, \$uid)
+    {
+        return \$this->fetchUnique(\"WHERE `provider`='\" . \$provider . \"' AND `uid`='\" . \$uid . \"'\");
+    }
+}";
         $this->assertEquals($expected, $actual);
 
-        $actual = PhpSnippets::metadata('User', $json['entities']['User']);
+        $actual = PhpSnippets::baserepository('User', $json['entities']['User']);
         $expected = "<?php
-return array(
-    'name' => 'User',
-    'repoClass' => 'mheinzerling\\test2\\UserRepository',
-    'baseClass' => 'mheinzerling\\test2\\BaseUser',
-    'entityClass' => 'mheinzerling\\test2\\User',
-    'namespace' => 'mheinzerling\\test2',
-    'table' => 'user',
-    'fields' => array(
-        'id' => array('type' => 'Integer', 'auto' => true, 'primary' => true),
-        'nick' => array('type' => 'String', 'length' => 100),
-        'birthday' => array('type' => '\DateTime', 'optional' => true)),
-    'pk' => array('id'),
-    'autoincrement' => 'id'
-);";
+namespace mheinzerling\\test2;
+
+use mheinzerling\\entity\\EntityRepository;
+
+class BaseUserRepository extends EntityRepository
+{
+    public function getMeta()
+    {
+        return array(
+            'name' => 'User',
+            'repoClass' => 'mheinzerling\\test2\\UserRepository',
+            'baseClass' => 'mheinzerling\\test2\\BaseUser',
+            'entityClass' => 'mheinzerling\\test2\\User',
+            'namespace' => 'mheinzerling\\test2',
+            'table' => 'user',
+            'fields' => array(
+                'id' => array('type' => 'Integer', 'auto' => true, 'primary' => true),
+                'nick' => array('type' => 'String', 'length' => 100),
+                'birthday' => array('type' => '\DateTime', 'optional' => true)),
+            'pk' => array('id'),
+            'autoincrement' => 'id'
+        );
+    }
+
+    /**
+     * @return User
+     */
+    public function fetchById(\$id)
+    {
+        return \$this->fetchUnique(\"WHERE `id`='\" . \$id . \"'\");
+    }
+}";
         $this->assertEquals($expected, $actual);
 
     }

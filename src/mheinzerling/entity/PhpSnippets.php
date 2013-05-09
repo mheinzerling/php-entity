@@ -10,8 +10,7 @@ class PhpSnippets
     public static function repository($name, $namespace)
     {
         $result = self::header($namespace);
-        $result .= 'use mheinzerling\entity\EntityRepository;' . "\n\n";
-        $result .= "class " . $name . "Repository extends EntityRepository\n";
+        $result .= "class " . $name . "Repository extends Base" . $name . "Repository\n";
         $result .= "{\n";
         $result .= "}";
         return $result;
@@ -33,7 +32,7 @@ class PhpSnippets
         return $result;
     }
 
-    public static function metadata($name, $properties)
+    public static function baserepository($name, $properties)
     {
         $ns = isset($properties['namespace']) ? $properties['namespace'] : "";
         $fields = '';
@@ -56,25 +55,47 @@ class PhpSnippets
                 $p .= "'$key' => " . $value . ", ";
             }
             $p = substr($p, 0, -2);
-            $fields .= "        '$field' => array(" . $p . "),\n";
+            $fields .= "                '$field' => array(" . $p . "),\n";
         }
         $fields = substr($fields, 0, -2);
 
+        $result = self::header($ns);
+        $result .= "use mheinzerling\\entity\\EntityRepository;\n\n";
+        $result .= "class Base" . $name . "Repository extends EntityRepository\n";
+        $result .= "{\n";
+        $result .= "    public function getMeta()\n";
+        $result .= "    {\n";
 
-        $result = "<?php\n";
-        $result .= "return array(\n";
-        $result .= "    'name' => '" . $name . "',\n";
-        $result .= "    'repoClass' => '" . $ns . "\\" . $name . "Repository',\n";
-        $result .= "    'baseClass' => '" . $ns . "\\Base" . $name . "',\n";
-        $result .= "    'entityClass' => '" . $ns . "\\" . $name . "',\n";
-        $result .= "    'namespace' => '" . $ns . "',\n";
-        $result .= "    'table' => '" . strtolower($name) . "',\n";
-        $result .= "    'fields' => array(\n";
+        $result .= "        return array(\n";
+        $result .= "            'name' => '" . $name . "',\n";
+        $result .= "            'repoClass' => '" . $ns . "\\" . $name . "Repository',\n";
+        $result .= "            'baseClass' => '" . $ns . "\\Base" . $name . "',\n";
+        $result .= "            'entityClass' => '" . $ns . "\\" . $name . "',\n";
+        $result .= "            'namespace' => '" . $ns . "',\n";
+        $result .= "            'table' => '" . strtolower($name) . "',\n";
+        $result .= "            'fields' => array(\n";
         $result .= "" . $fields . "),\n";
-        $result .= "    'pk' => array('" . implode("', '", $pk) . "'),\n";
-        $result .= "    'autoincrement' => " . ($auto == null ? "null" : "'$auto'") . "\n";
-        $result .= ");";
+        $result .= "            'pk' => array('" . implode("', '", $pk) . "'),\n";
+        $result .= "            'autoincrement' => " . ($auto == null ? "null" : "'$auto'") . "\n";
+        $result .= "        );\n";
+        $result .= "    }\n";
 
+        if (count($pk) > 0) {
+            $upk = array_map('mheinzerling\commons\StringUtils::firstCharToUpper', $pk);
+            $where = array_map(function ($n) {
+                return "`$n`='\" . \$$n . \"'";
+            }, $pk);
+            $result .= "\n";
+            $result .= "    /**\n";
+            $result .= "     * @return $name\n";
+            $result .= "     */\n";
+            $result .= "    public function fetchBy" . implode("And", $upk) . "(\$" . implode(", \$", $pk) . ")\n";
+            $result .= "    {\n";
+            $result .= "        return \$this->fetchUnique(\"WHERE " . implode(" AND ", $where) . "\");\n";
+            $result .= "    }\n";
+        }
+
+        $result .= "}";
         return $result;
     }
 

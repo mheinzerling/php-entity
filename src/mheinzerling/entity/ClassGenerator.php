@@ -4,10 +4,16 @@ namespace mheinzerling\entity;
 
 
 use mheinzerling\commons\FileUtils;
+use mheinzerling\commons\JsonUtils;
 use mheinzerling\commons\StringUtils;
 
 class ClassGenerator
 {
+    public static function loadFromFile($file)
+    {
+        return new ClassGenerator(JsonUtils::parseToArray(file_get_contents($file)));
+    }
+
     private $config;
     private $src;
     private $gensrc;
@@ -19,30 +25,63 @@ class ClassGenerator
         $this->gensrc = isset($this->config['gensrc']) ? $this->config['gensrc'] : "gensrc";
     }
 
-    public function generateFiles()
+    public function getEntities()
     {
-        $files = array();
+        $entities = array();
         foreach ($this->config['entities'] as $name => $properties) {
             $name = StringUtils::firstCharToUpper($name);
             $ns = isset($properties['namespace']) ? $properties['namespace'] : "";
-            $src = FileUtils::toUnix(FileUtils::append($this->src, $ns));
-            $gensrc = FileUtils::toUnix(FileUtils::append($this->gensrc, $ns));
 
-            $files[FileUtils::append($src, $name . ".php")] = PhpSnippets::entity($name, $ns);
-            $files[FileUtils::append($src, $name . "Repository.php")] = PhpSnippets::repository($name, $ns);
-            $foreignKeys = $this->validate($properties);
-            $files[FileUtils::append($gensrc, $name . "MetaData.php")] = PhpSnippets::metadata($name, $properties);
-            $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = PhpSnippets::base($name, $properties, $foreignKeys);
+
+            $pk = array();
+            foreach ($properties as $field => $property) {
+                if (isset($property['primary']) && $property['primary']) $pk[] = $field;
+            }
+            if (count($pk) == 1) $foreignKeys = $pk[0];
+            else $foreignKeys = null;
+            $entities[$name] = array('namespace' => $ns, 'foreignKey' => $foreignKeys);
+
+
+        }
+        return $entities;
+    }
+
+    public function generateFiles()
+    {
+        $files = array();
+        $entities = $this->getEntities();
+        $foreignKeys = array();
+        foreach ($entities as $name => $e) {
+            if ($e['foreignKey'] != null) $foreignKeys["\\" . $e['namespace'] . "\\" . $name] = $e['foreignKey'];
+        }
+        foreach ($this->config['entities'] as $name => $properties) {
+            $name = StringUtils::firstCharToUpper($name);
+            $ns = isset($properties['namespace']) ? $properties['namespace'] : "";
+            $src = FileUtils::to(FileUtils::append($this->src, $ns), FileUtils::UNIX);
+            $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $ns), FileUtils::UNIX);
+
+
+            foreach ($properties as $field => &$property) {
+                if (isset ($property['type'])) {
+                    if (isset($entities[$property['type']])) {
+                        $property['type'] = "\\" . $entities[$property['type']]['namespace'] . "\\" . $property['type'];
+                    }
+                }
+            }
+            $files[FileUtils::append($src, $name . ".php")] = array("content" => PhpSnippets::entity($name, $ns), 'overwrite' => false);
+            $files[FileUtils::append($src, $name . "Repository.php")] = array("content" => PhpSnippets::repository($name, $ns), 'overwrite' => false);
+            $this->validate($properties, $entities);
+            $files[FileUtils::append($gensrc, "Base" . $name . "Repository.php")] = array("content" => PhpSnippets::baserepository($name, $properties), 'overwrite' => true);
+            $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = array("content" => PhpSnippets::base($name, $properties, $foreignKeys), 'overwrite' => true);
 
         }
         return $files;
     }
 
-    private function validate(&$properties)
+    private function validate(&$properties, $entities)
     {
         //TODO
 //else throw new AnnotationException("Multiple autoincrement values in " . $this->entityClass);
-        //resolve entity name spaces
         return array();
     }
 }
