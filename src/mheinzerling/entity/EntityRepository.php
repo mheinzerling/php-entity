@@ -23,6 +23,12 @@ abstract class EntityRepository
         return $this->connection->exec($this->meta->dropSchema() . $this->meta->buildSchema());
     }
 
+    public function isInitialized()
+    {
+        $query = "SHOW TABLES LIKE '" . $this->meta->table . "'";
+        return $this->connection->query($query)->rowCount() == 1;
+    }
+
     public function persist(Entity &$entity)
     {
         $data = array();
