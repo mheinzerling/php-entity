@@ -79,7 +79,7 @@ class BaseCredentialRepository extends EntityRepository
      */
     public function fetchByProviderAndUid(\$provider, \$uid)
     {
-        return \$this->fetchUnique(\"WHERE `provider`='\" . \$provider . \"' AND `uid`='\" . \$uid . \"'\");
+        return \$this->fetchUnique(\"WHERE `provider`=:provider AND `uid`=:uid\", array('provider'=>\$provider, 'uid'=>\$uid));
     }
 }";
         $this->assertEquals($expected, $actual);
@@ -115,7 +115,7 @@ class BaseUserRepository extends EntityRepository
      */
     public function fetchById(\$id)
     {
-        return \$this->fetchUnique(\"WHERE `id`='\" . \$id . \"'\");
+        return \$this->fetchUnique(\"WHERE `id`=:id\", array('id'=>\$id));
     }
 }";
         $this->assertEquals($expected, $actual);

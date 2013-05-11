@@ -73,26 +73,32 @@ abstract class EntityRepository
     /**
      * @return \PDOStatement
      */
-    private function prepareStatement($constraint)
+    private function prepareStatement($constraint, $values = null)
     {
         if ($constraint == null) {
             $constraint = '';
         } else {
-            //TODO sanitize
             $constraint = ' ' . $constraint;
         }
-        return $this->connection->query('SELECT * FROM `' . $this->meta->table . '`' . $constraint);
+        $stmt = $this->connection->prepare('SELECT * FROM `' . $this->meta->table . '`' . $constraint);
+        if ($values != null) {
+            foreach ($values as $parameter => $value) {
+                $stmt->bindValue(":" . $parameter, $value);
+            }
+        }
+        $stmt->execute();
+        return $stmt;
     }
 
-    public function fetchAll($constraint = null)
+    public function fetchAll($constraint = null, $values = null)
     {
-        $stmt = $this->prepareStatement($constraint);
+        $stmt = $this->prepareStatement($constraint, $values);
         return $stmt->fetchAll(\PDO::FETCH_CLASS, $this->meta->entityClass);
     }
 
-    public function fetchUnique($constraint = null)
+    public function fetchUnique($constraint = null, $values = null)
     {
-        $stmt = $this->prepareStatement($constraint);
+        $stmt = $this->prepareStatement($constraint, $values);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, $this->meta->entityClass);
         return $stmt->fetch();
     }
@@ -101,8 +107,7 @@ abstract class EntityRepository
     {
         if (is_array($pk) || count($this->meta->pk) != 1) throw new \Exception("Unsupported operation");
         $key = $this->meta->pk[0];
-        return $this->fetchUnique("WHERE `" . $key . "`='" . $pk . "'"); //TODO
+        return $this->fetchUnique("WHERE `$key`=:$key", array($key => $pk));
     }
-
 
 }

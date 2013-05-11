@@ -82,8 +82,11 @@ class PhpSnippets
 
         if (count($pk) > 0) {
             $upk = array_map('mheinzerling\commons\StringUtils::firstCharToUpper', $pk);
-            $where = array_map(function ($n) {
-                return "`$n`='\" . \$$n . \"'";
+            $binding = array_map(function ($n) {
+                return "`$n`=:$n";
+            }, $pk);
+            $array = array_map(function ($n) {
+                return "'$n'=>\$$n";
             }, $pk);
             $result .= "\n";
             $result .= "    /**\n";
@@ -91,7 +94,7 @@ class PhpSnippets
             $result .= "     */\n";
             $result .= "    public function fetchBy" . implode("And", $upk) . "(\$" . implode(", \$", $pk) . ")\n";
             $result .= "    {\n";
-            $result .= "        return \$this->fetchUnique(\"WHERE " . implode(" AND ", $where) . "\");\n";
+            $result .= "        return \$this->fetchUnique(\"WHERE " . implode(" AND ", $binding) . "\", array(" . implode(", ", $array) . "));\n";
             $result .= "    }\n";
         }
 
