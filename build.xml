@@ -22,12 +22,21 @@
         <os family="windows"/>
     </condition>
 
-    <target name="test">
+    <target name="gen">
+        <delete dir="resources/tests/src"/>
+        <delete dir="resources/tests/gensrc"/>
+
+        <exec executable="php" failonerror="true">
+            <arg line="bin/entity gen resources/tests/entities.json"/>
+        </exec>
+    </target>
+
+    <target name="test" depends="gen">
         <exec executable="${phpunit.executable}" failonerror="true">
             <arg line="--log-junit ci/test.xml --coverage-clover ci/coverage.xml --coverage-html ci/coverage"/>
         </exec>
     </target>
 
-    <target name="ci" depends="clean,init,composer,test">
+    <target name="ci" depends="clean,init,composer,gen,test">
     </target>
 </project>
