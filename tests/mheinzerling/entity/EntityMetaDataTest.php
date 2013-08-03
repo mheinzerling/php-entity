@@ -25,9 +25,10 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
             'namespace' => 'mheinzerling\test2',
             'table' => 'user',
             'fields' => array(
-                'id' => array('primary' => 1, 'auto' => 1, 'type' => 'Integer'),
+                'id' => array('type' => 'Integer', 'auto' => 1, 'primary' => 1),
                 'nick' => array('type' => 'String', 'length' => 100),
-                'birthday' => array('type' => '\DateTime', 'optional' => 1)),
+                'birthday' => array('type' => '\DateTime', 'optional' => 1),
+                'active' => array('type' => 'Boolean', 'default' => 0)),
             'pk' => array('id'),
             'autoincrement' => 'id'
         );
@@ -58,7 +59,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
     public function testSchema()
     {
         $meta = new EntityMetaData(new UserRepository(null));
-        $expected = "CREATE TABLE `user` (`id` INT NOT NULL AUTO_INCREMENT,`nick` VARCHAR(100) NOT NULL,`birthday` DATETIME NULL,PRIMARY KEY (`id`));";
+        $expected = "CREATE TABLE `user` (`id` INT NOT NULL AUTO_INCREMENT,`nick` VARCHAR(100) NOT NULL,`birthday` DATETIME NULL,`active` INT(1) NOT NULL DEFAULT '0',PRIMARY KEY (`id`));";
         $actual = $meta->buildSchema();
         $this->assertEquals($expected, $actual);
     }

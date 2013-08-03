@@ -60,6 +60,8 @@ class EntityMetaData
         if ($type == 'Integer') {
             $column .= " INT";
             if ($length) $column .= "(" . $length . ")";
+        } else if ($type == 'Boolean') {
+            $column .= " INT(1)";
         } else if ($type == 'String') {
             if ($length > 0 && $length <= 255) $column .= " VARCHAR(" . $length . ")";
             else  $column .= " TEXT";
@@ -75,6 +77,7 @@ class EntityMetaData
         //TODO default
         if (isset($properties['optional'])) $column .= ' NULL';
         else $column .= ' NOT NULL';
+        if (isset($properties['default'])) $column .= ' DEFAULT \'' . $properties['default'] . '\'';
         if (isset($properties['auto'])) $column .= ' AUTO_INCREMENT';
         return $column;
     }

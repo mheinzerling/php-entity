@@ -35,6 +35,15 @@ abstract class EntityRepository
         foreach ($this->meta->fields as $key => $field) {
             $method = "get" . StringUtils::firstCharToUpper($key);
             $data[$key] = $this->mapValue($entity->$method());
+            if ($data[$key] == null) {
+                $mandatory = !(isset($field['optional']) && $field['optional']);
+                $default = isset($field['default']);
+                if ($mandatory && $default) {
+                    $data[$key] = $field['default'];
+                    $method = "set" . StringUtils::firstCharToUpper($key);
+                    $entity->$method($data[$key]);
+                }
+            }
         }
         if ($this->meta->autoincrement != null && $data[$this->meta->autoincrement] == null) {
             DatabaseUtils::insertAssoc($this->connection, $this->meta->table, $data);

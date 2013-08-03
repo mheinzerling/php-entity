@@ -104,7 +104,8 @@ class BaseUserRepository extends EntityRepository
             'fields' => array(
                 'id' => array('type' => 'Integer', 'auto' => true, 'primary' => true),
                 'nick' => array('type' => 'String', 'length' => 100),
-                'birthday' => array('type' => '\DateTime', 'optional' => true)),
+                'birthday' => array('type' => '\DateTime', 'optional' => true),
+                'active' => array('type' => 'Boolean', 'default' => 0)),
             'pk' => array('id'),
             'autoincrement' => 'id'
         );
@@ -234,6 +235,11 @@ abstract class BaseUser extends Entity
      */
     protected $birthday;
 
+    /**
+     * @var Boolean
+     */
+    protected $active;
+
     public function __construct()
     {
         if (!$this->birthday instanceof \DateTime && $this->birthday != null) {
@@ -287,6 +293,22 @@ abstract class BaseUser extends Entity
     public function getBirthday()
     {
         return $this->birthday;
+    }
+
+    /**
+     * @param Boolean $active
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+    }
+
+    /**
+     * @return Boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
     }
 
 }';

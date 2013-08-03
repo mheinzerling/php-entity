@@ -38,6 +38,10 @@
       "birthday": {
         "type": "\\DateTime",
         "optional": true
+      },
+      "active": {
+        "type": "Boolean",
+        "default": 0
       }
     }
   }
