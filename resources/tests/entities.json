@@ -1,6 +1,7 @@
 {
   "gensrc": "gensrc",
   "src": "src",
+  "initializer": "mheinzerling",
   "entities": {
     "Credential": {
       "namespace": "mheinzerling\\test",

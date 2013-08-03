@@ -3,6 +3,7 @@
 namespace mheinzerling\entity;
 
 
+use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\StringUtils;
 
 class PhpSnippets
@@ -187,4 +188,20 @@ class PhpSnippets
 
     }
 
+    public static function initializer($namespace, array $entities)
+    {
+        $result = self::header($namespace);
+        $result .= "class SchemaInitializer\n";
+        $result .= "{\n";
+        $result .= "    public function initialize()\n";
+        $result .= "    {\n";
+        foreach ($entities as $name => $entity) {
+            $result .= "        \$repo = new \\" . FileUtils::append($entity['namespace'], $name, FileUtils::NS) . "Repository();\n";
+            $result .= "        \$repo->initialize();\n";
+        }
+        $result .= "    }\n";
+        $result .= "}";
+
+        return $result;
+    }
 }

@@ -317,4 +317,24 @@ abstract class BaseUser extends Entity
         $this->assertEquals($expected, $actual);
 
     }
+
+    public function testInitializer()
+    {
+        $actual = PhpSnippets::initializer("mheinzerling", array('Credential' => array('namespace' => 'mheinzerling\test\\'),
+            'User' => array('namespace' => 'mheinzerling\test2\\')));
+        $expected = "<?php
+namespace mheinzerling;
+
+class SchemaInitializer
+{
+    public function initialize()
+    {
+        \$repo = new \\mheinzerling\\test\\CredentialRepository();
+        \$repo->initialize();
+        \$repo = new \\mheinzerling\\test2\\UserRepository();
+        \$repo->initialize();
+    }
+}";
+        $this->assertEquals($expected, $actual);
+    }
 }

@@ -9,7 +9,7 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
 {
     public function testListOfFilesAndPaths()
     {
-        $json = '{"gensrc": "gensrc","src": "src","entities": {
+        $json = '{"gensrc": "gensrc","src": "src","initializer":"mheinzerling","entities": {
          "Abc": {"namespace": "mheinzerling\\\\foo\\\\bar" },
          "mno": {  } ,
          "Xyz": { "namespace": "mheinzerling\\\\xyz" }}}';
@@ -29,7 +29,8 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
             "src/mheinzerling/xyz/Xyz.php",
             "src/mheinzerling/xyz/XyzRepository.php",
             "gensrc/mheinzerling/xyz/BaseXyzRepository.php",
-            "gensrc/mheinzerling/xyz/BaseXyz.php");
+            "gensrc/mheinzerling/xyz/BaseXyz.php",
+            "gensrc/mheinzerling/SchemaInitializer.php");
 
         $this->assertEquals($expected, $files);
     }
