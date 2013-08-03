@@ -29,6 +29,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
                 'nick' => array('type' => 'String', 'length' => 100),
                 'birthday' => array('type' => '\DateTime', 'optional' => 1),
                 'active' => array('type' => 'Boolean', 'default' => 0)),
+            'unique' => array('nick' => array('nick')),
             'pk' => array('id'),
             'autoincrement' => 'id'
         );
@@ -51,6 +52,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
                 'uid' => array('type' => 'String', 'length' => 255, 'primary' => 1),
                 'user' => array('type' => '\mheinzerling\test2\User', 'optional' => 1)),
             'pk' => array('provider', 'uid'),
+            'unique' => array(),
             'autoincrement' => null
         );
         $this->assertEquals($expected, (array)$actual);
@@ -59,7 +61,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
     public function testSchema()
     {
         $meta = new EntityMetaData(new UserRepository(null));
-        $expected = "CREATE TABLE `user` (`id` INT NOT NULL AUTO_INCREMENT,`nick` VARCHAR(100) NOT NULL,`birthday` DATETIME NULL,`active` INT(1) NOT NULL DEFAULT '0',PRIMARY KEY (`id`));";
+        $expected = "CREATE TABLE `user` (`id` INT NOT NULL AUTO_INCREMENT,`nick` VARCHAR(100) NOT NULL,`birthday` DATETIME NULL,`active` INT(1) NOT NULL DEFAULT '0',PRIMARY KEY (`id`),UNIQUE KEY `nick` (`nick`));";
         $actual = $meta->buildSchema();
         $this->assertEquals($expected, $actual);
     }

@@ -12,6 +12,7 @@ class EntityMetaData
     public $table;
     public $fields;
     public $pk = array();
+    public $unique = array();
     public $autoincrement;
 
     public function __construct(EntityRepository $repo = null)
@@ -28,6 +29,7 @@ class EntityMetaData
         $this->table = $data['table'];
         $this->fields = $data['fields'];
         $this->pk = $data['pk'];
+        $this->unique = $data['unique'];
         $this->autoincrement = $data['autoincrement'];
     }
 
@@ -44,10 +46,16 @@ class EntityMetaData
 
         }
         if (count($this->pk)) {
-            $schema .= 'PRIMARY KEY (`' . implode('`,`', $this->pk) . '`)';
-        } else {
-            $schema = substr($schema, 0, -1);
+            $schema .= 'PRIMARY KEY (`' . implode('`,`', $this->pk) . '`),';
         }
+
+        if (count($this->unique)) {
+            foreach ($this->unique as $name => $fields) {
+                $schema .= 'UNIQUE KEY `' . $name . '` (`' . implode('`,`', $fields) . '`),';
+            }
+        }
+
+        $schema = substr($schema, 0, -1);
         $schema .= ');';
         return $schema;
     }
@@ -74,7 +82,6 @@ class EntityMetaData
 
             throw new \Exception("Couldn't map >" . $type . "< to a SQL"); //TODO
         }
-        //TODO default
         if (isset($properties['optional'])) $column .= ' NULL';
         else $column .= ' NOT NULL';
         if (isset($properties['default'])) $column .= ' DEFAULT \'' . $properties['default'] . '\'';

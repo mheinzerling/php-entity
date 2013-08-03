@@ -38,9 +38,16 @@ class PhpSnippets
         $fields = '';
         $auto = null;
         $pk = array();
+        $unique = "";
         foreach ($properties as $field => $property) {
             if ($field == 'namespace') continue;
-            if ($field == 'unique') continue; //TODO
+            if ($field == 'unique') {
+                foreach ($property as $iname => $f) {
+                    $unique .= "'" . $iname . "'=>array('" . implode("', '", $f) . "'),";
+                }
+                if (strlen($unique) > 0) $unique = substr($unique, 0, -1);
+                continue;
+            }
             if (isset($property['primary']) && $property['primary']) $pk[] = $field;
             if (isset($property['auto']) && $property['auto']) {
                 $auto = $field;
@@ -76,6 +83,7 @@ class PhpSnippets
         $result .= "            'fields' => array(\n";
         $result .= "" . $fields . "),\n";
         $result .= "            'pk' => array('" . implode("', '", $pk) . "'),\n";
+        $result .= "            'unique' => array(" . $unique . "),\n";
         $result .= "            'autoincrement' => " . ($auto == null ? "null" : "'$auto'") . "\n";
         $result .= "        );\n";
         $result .= "    }\n";

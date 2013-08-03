@@ -70,6 +70,7 @@ class BaseCredentialRepository extends EntityRepository
                 'uid' => array('type' => 'String', 'length' => 255, 'primary' => true),
                 'user' => array('type' => '\\mheinzerling\\test2\\User', 'optional' => true)),
             'pk' => array('provider', 'uid'),
+            'unique' => array(),
             'autoincrement' => null
         );
     }
@@ -107,6 +108,7 @@ class BaseUserRepository extends EntityRepository
                 'birthday' => array('type' => '\DateTime', 'optional' => true),
                 'active' => array('type' => 'Boolean', 'default' => 0)),
             'pk' => array('id'),
+            'unique' => array('nick'=>array('nick')),
             'autoincrement' => 'id'
         );
     }
