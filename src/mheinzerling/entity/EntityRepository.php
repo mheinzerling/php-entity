@@ -119,4 +119,8 @@ abstract class EntityRepository
         return $this->fetchUnique("WHERE `$key`=:$key", array($key => $pk));
     }
 
+    protected function getConnection()
+    {
+        return $this->connection;
+    }
 }
