@@ -36,7 +36,8 @@ class EntityProxy extends Entity
             if ($function_name == $pkGetter) {
                 return $this->pk[$pkName];
             }
-            $this->entity = $r->fetchByPk(array_values($this->pk)[0]); //TODO composed pk
+            $values = array_values($this->pk);
+            $this->entity = $r->fetchByPk($values[0]); //TODO composed pk
         }
         return call_user_func_array(array($this->entity, $function_name), $parameters);
     }
