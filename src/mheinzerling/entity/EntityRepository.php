@@ -3,8 +3,8 @@
 namespace mheinzerling\entity;
 
 
-use mheinzerling\commons\StringUtils;
 use mheinzerling\commons\database\DatabaseUtils;
+use mheinzerling\commons\StringUtils;
 
 abstract class EntityRepository
 {
@@ -34,7 +34,7 @@ abstract class EntityRepository
         $data = array();
         foreach ($this->meta->fields as $key => $field) {
             $method = "get" . StringUtils::firstCharToUpper($key);
-            $data[$key] = $this->mapValue($entity->$method());
+            $data[$key] = $this->mapValue($key, $entity->$method());
             if ($data[$key] == null) {
                 $mandatory = !(isset($field['optional']) && $field['optional']);
                 $default = isset($field['default']);
@@ -54,9 +54,10 @@ abstract class EntityRepository
         }
     }
 
-    private function mapValue($value)
+    private function mapValue($key, $value)
     {
         if (is_string($value) || is_numeric($value) || is_null($value)) return $value;
+        if (is_bool($value)) return $value ? '1' : '0';
         if (is_object($value)) {
 
             if (is_subclass_of($value, '\mheinzerling\entity\Entity')) {
@@ -69,11 +70,11 @@ abstract class EntityRepository
             } elseif ($value instanceof \DateTime) {
                 return $value->format("Y-m-d H:i:s");
             } else {
-                throw new \Exception("Missing database mapping for type :" . get_class($value)); //TODO
+                throw new \Exception("Missing database mapping for key " . $key . " with type :" . get_class($value)); //TODO
             }
 
         }
-        throw new \Exception("Missing database mapping for type :" . gettype($value)); //TODO
+        throw new \Exception("Missing database mapping for key " . $key . " with type :" . gettype($value)); //TODO
 
     }
 
