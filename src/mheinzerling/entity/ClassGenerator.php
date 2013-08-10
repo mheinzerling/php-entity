@@ -75,6 +75,7 @@ class ClassGenerator
             $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = array("content" => PhpSnippets::base($name, $properties, $foreignKeys), 'overwrite' => true);
 
         }
+        if (!isset($this->config['initializer'])) die("Please add a initializer path to the entities.json");
         $namespace = $this->config['initializer'];  //TODO
         $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $namespace), FileUtils::UNIX);
         $files[FileUtils::append($gensrc, "SchemaInitializer.php")] = array("content" => PhpSnippets::initializer($namespace, $entities), 'overwrite' => true);
