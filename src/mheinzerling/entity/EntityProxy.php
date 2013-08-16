@@ -42,4 +42,13 @@ class EntityProxy extends Entity
         return call_user_func_array(array($this->entity, $function_name), $parameters);
     }
 
+    public function this()
+    {
+        if ($this->entity == null) {
+            $r = $this->createRepo();
+            $values = array_values($this->pk);
+            $this->entity = $r->fetchByPk($values[0]); //TODO composed pk
+        }
+        return $this->entity;
+    }
 }
