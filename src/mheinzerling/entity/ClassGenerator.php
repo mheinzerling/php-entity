@@ -46,10 +46,16 @@ class ClassGenerator
         return $entities;
     }
 
+    public function getEnums()
+    {
+        return $this->config['enums'];
+    }
+
     public function generateFiles()
     {
         $files = array();
         $entities = $this->getEntities();
+        $enums = $this->getEnums();
         $foreignKeys = array();
         foreach ($entities as $name => $e) {
             if ($e['foreignKey'] != null) $foreignKeys["\\" . $e['namespace'] . "\\" . $name] = $e['foreignKey'];
@@ -66,17 +72,27 @@ class ClassGenerator
                     if (isset($entities[$property['type']])) {
                         $property['type'] = "\\" . $entities[$property['type']]['namespace'] . "\\" . $property['type'];
                     }
+                    if (isset($enums[$property['type']])) {
+                        $property['values'] = $enums[$property['type']]['values'];
+                        $property['type'] = "\\" . $enums[$property['type']]['namespace'] . "\\" . $property['type'];
+                    }
                 }
             }
             $files[FileUtils::append($src, $name . ".php")] = array("content" => PhpSnippets::entity($name, $ns), 'overwrite' => false);
             $files[FileUtils::append($src, $name . "Repository.php")] = array("content" => PhpSnippets::repository($name, $ns), 'overwrite' => false);
             $this->validate($properties, $entities);
             $files[FileUtils::append($gensrc, "Base" . $name . "Repository.php")] = array("content" => PhpSnippets::baserepository($name, $properties), 'overwrite' => true);
-            $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = array("content" => PhpSnippets::base($name, $properties, $foreignKeys), 'overwrite' => true);
+            $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = array("content" => PhpSnippets::base($name, $properties, $foreignKeys, $enums), 'overwrite' => true);
 
         }
+        foreach ($enums as $enum => $property) {
+
+            $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $property['namespace']), FileUtils::UNIX);
+            $files[FileUtils::append($gensrc, $enum . ".php")] = array("content" => PhpSnippets::enum($property['namespace'], $enum, $property['values']), 'overwrite' => true);
+        }
+
         if (!isset($this->config['initializer'])) die("Please add a initializer path to the entities.json");
-        $namespace = $this->config['initializer'];  //TODO
+        $namespace = $this->config['initializer']; //TODO
         $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $namespace), FileUtils::UNIX);
         $files[FileUtils::append($gensrc, "SchemaInitializer.php")] = array("content" => PhpSnippets::initializer($namespace, $entities), 'overwrite' => true);
         return $files;

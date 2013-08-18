@@ -2,10 +2,11 @@
 namespace mheinzerling\entity;
 
 use mheinzerling\commons\database\LoggingPDO;
+use mheinzerling\commons\database\PersistenceProvider;
 use mheinzerling\commons\database\TestDatabaseConnection;
-use mheinzerling\entity\PersistenceProvider;
 use mheinzerling\test\Credential;
 use mheinzerling\test\CredentialRepository;
+use mheinzerling\test2\Gender;
 use mheinzerling\test2\User;
 use mheinzerling\test2\UserRepository;
 
@@ -13,7 +14,7 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
 {
     public function testPersistFetchEntityRef()
     {
-        PersistenceProvider::setConnection(new TestDatabaseConnection());
+        PersistenceProvider::setConnection(new TestDatabaseConnection(false));
         $credentials = new CredentialRepository();
         $credentials->initialize();
 
@@ -22,6 +23,7 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
         LoggingPDO::clearLog();
         $user = new User();
         $user->setNick('mnhg');
+        $user->setGender(Gender::MALE());
         $this->assertEquals(null, $user->getId());
         $users->persist($user);
         $this->assertEquals(1, $user->getId());
@@ -41,6 +43,7 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $dbId);
         $this->assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
         $this->assertEquals("mnhg", $dbUser->getNick());
+        $this->assertEquals(Gender::MALE(), $dbUser->getGender());
         $this->assertEquals(4, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
         $users->persist($dbUser);
     }

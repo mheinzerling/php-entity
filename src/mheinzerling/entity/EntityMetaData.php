@@ -2,6 +2,9 @@
 namespace mheinzerling\entity;
 
 
+use mheinzerling\commons\FileUtils;
+use mheinzerling\commons\StringUtils;
+
 class EntityMetaData
 {
     public $name;
@@ -17,7 +20,6 @@ class EntityMetaData
 
     public function __construct(EntityRepository $repo = null)
     {
-
         if ($repo == null) return;
 
         $data = $repo->getMeta();
@@ -78,6 +80,10 @@ class EntityMetaData
             else  $column .= " DATETIME";
         } else if (is_subclass_of($type, '\mheinzerling\entity\Entity')) {
             $column .= " INT(11)";
+        } else if (is_subclass_of($type, 'Eloquent\Enumeration\Enumeration')) {
+            $key = StringUtils::firstCharToLower(FileUtils::basename($type));
+            $values = "'" . implode("', '", array_keys($this->fields[$key]['values'])) . "'";
+            $column .= " ENUM($values)";
         } else {
 
             throw new \Exception("Couldn't map >" . $type . "< to a SQL"); //TODO

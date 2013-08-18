@@ -85,6 +85,7 @@ class BaseCredentialRepository extends EntityRepository
 }";
         $this->assertEquals($expected, $actual);
 
+        $json['entities']['User']['gender']['values'] = array('m' => 'male', 'f' => 'female');
         $actual = PhpSnippets::baserepository('User', $json['entities']['User']);
         $expected = "<?php
 namespace mheinzerling\\test2;
@@ -106,7 +107,8 @@ class BaseUserRepository extends EntityRepository
                 'id' => array('type' => 'Integer', 'auto' => true, 'primary' => true),
                 'nick' => array('type' => 'String', 'length' => 100),
                 'birthday' => array('type' => '\DateTime', 'optional' => true),
-                'active' => array('type' => 'Boolean', 'default' => 0)),
+                'active' => array('type' => 'Boolean', 'default' => 0),
+                'gender' => array('type' => 'Gender', 'optional' => true, 'values' => array('m' => 'male', 'f' => 'female'))),
             'pk' => array('id'),
             'unique' => array('nick'=>array('nick')),
             'autoincrement' => 'id'
@@ -132,7 +134,7 @@ class BaseUserRepository extends EntityRepository
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
         $foreignKeys = array('\mheinzerling\test2\User' => 'id');
-        $actual = PhpSnippets::base('Credential', $json['entities']['Credential'], $foreignKeys);
+        $actual = PhpSnippets::base('Credential', $json['entities']['Credential'], $foreignKeys, array());
         $expected = '<?php
 namespace mheinzerling\test;
 
@@ -213,8 +215,8 @@ abstract class BaseCredential extends Entity
 
 }';
         $this->assertEquals($expected, $actual);
-
-        $actual = PhpSnippets::base('User', $json['entities']['User'], array());
+        $json['entities']['User']['gender']['type'] = "\\mheinzerling\\test2\\Gender";
+        $actual = PhpSnippets::base('User', $json['entities']['User'], array(), array("Gender" => array('namespace' => 'mheinzerling\\test2')));
         $expected = '<?php
 namespace mheinzerling\test2;
 
@@ -242,10 +244,18 @@ abstract class BaseUser extends Entity
      */
     protected $active;
 
+    /**
+     * @var \mheinzerling\test2\Gender
+     */
+    protected $gender;
+
     public function __construct()
     {
         if (!$this->birthday instanceof \DateTime && $this->birthday != null) {
             $this->birthday = new \DateTime($this->birthday);
+        }
+        if (!$this->gender instanceof \mheinzerling\test2\Gender && $this->gender != null) {
+            $this->gender = \mheinzerling\test2\Gender::memberByValue(strToUpper($this->gender));
         }
     }
 
@@ -313,6 +323,22 @@ abstract class BaseUser extends Entity
         return $this->active;
     }
 
+    /**
+     * @param \mheinzerling\test2\Gender $gender
+     */
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @return \mheinzerling\test2\Gender
+     */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
 }';
         $this->assertEquals($expected, $actual);
 
@@ -335,6 +361,27 @@ class SchemaInitializer
         \$repo->initialize();
     }
 }";
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testEnum()
+    {
+        $actual = PhpSnippets::enum("mheinzerling", "gender", array("m" => "male", "f" => "female"));
+        $expected = "<?php
+namespace mheinzerling;
+
+use Eloquent\\Enumeration\\Enumeration;
+
+/**
+ * @method static Gender MALE()
+ * @method static Gender FEMALE()
+ */
+final class gender extends Enumeration
+{
+    const MALE = 'M';
+    const FEMALE = 'F';
+}
+";
         $this->assertEquals($expected, $actual);
     }
 }

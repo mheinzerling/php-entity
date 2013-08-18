@@ -1,8 +1,8 @@
 <?php
 namespace mheinzerling\entity;
 
+use mheinzerling\commons\database\PersistenceProvider;
 use mheinzerling\commons\database\TestDatabaseConnection;
-use mheinzerling\entity\EntityMetaData;
 use mheinzerling\test\CredentialRepository;
 use mheinzerling\test2\UserRepository;
 
@@ -28,9 +28,10 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
                 'id' => array('type' => 'Integer', 'auto' => 1, 'primary' => 1),
                 'nick' => array('type' => 'String', 'length' => 100),
                 'birthday' => array('type' => '\DateTime', 'optional' => 1),
-                'active' => array('type' => 'Boolean', 'default' => 0)),
-            'unique' => array('nick' => array('nick')),
+                'active' => array('type' => 'Boolean', 'default' => 0),
+                'gender' => array('type' => '\mheinzerling\test2\Gender', 'optional' => 1, 'values' => array('m' => 'male', 'f' => 'female'))),
             'pk' => array('id'),
+            'unique' => array('nick' => array('nick')),
             'autoincrement' => 'id'
         );
         $this->assertEquals($expected, (array)$actual);
@@ -61,7 +62,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
     public function testSchema()
     {
         $meta = new EntityMetaData(new UserRepository(null));
-        $expected = "CREATE TABLE `user` (`id` INT NOT NULL AUTO_INCREMENT,`nick` VARCHAR(100) NOT NULL,`birthday` DATETIME NULL,`active` INT(1) NOT NULL DEFAULT '0',PRIMARY KEY (`id`),UNIQUE KEY `nick` (`nick`));";
+        $expected = "CREATE TABLE `user` (`id` INT NOT NULL AUTO_INCREMENT,`nick` VARCHAR(100) NOT NULL,`birthday` DATETIME NULL,`active` INT(1) NOT NULL DEFAULT '0',`gender` ENUM('m', 'f') NULL,PRIMARY KEY (`id`),UNIQUE KEY `nick` (`nick`));";
         $actual = $meta->buildSchema();
         $this->assertEquals($expected, $actual);
     }

@@ -55,7 +55,15 @@ class PhpSnippets
             }
             $p = '';
             foreach ($property as $key => $value) {
-                if (is_bool($value)) {
+                if (is_array($value)) {
+                    $arr = "array('";
+                    foreach ($value as $k => $v) {
+                        $arr .= $k . "' => '" . $v . "', '";
+                    }
+                    $arr = substr($arr, 0, -4);
+                    $arr .= "')";
+                    $value = $arr;
+                } elseif (is_bool($value)) {
                     $value = $value ? 'true' : 'false';
                 } else if (is_string($value)) {
                     $value = "'" . $value . "'";
@@ -111,8 +119,12 @@ class PhpSnippets
         return $result;
     }
 
-    public static function base($name, $properties, $foreignKeys)
+    public static function base($name, $properties, $foreignKeys, $enums)
     {
+        $qualifiedEnums = array();
+        foreach ($enums as $key => $property) {
+            $qualifiedEnums["\\" . $property['namespace'] . "\\" . $key] = true;
+        }
         $namespace = isset($properties['namespace']) ? $properties['namespace'] : "";
 
         $vars = array();
@@ -125,7 +137,7 @@ class PhpSnippets
             $vars[$field] = $type;
             if ($type[0] == '\\') {
                 $special[$field] = $type; //TODO?
-                $requireProxy |= $type != '\DateTime'; //TODO?
+                $requireProxy |= $type != '\DateTime' && !array_key_exists($type, $qualifiedEnums); //TODO?
             }
         }
 
@@ -150,6 +162,8 @@ class PhpSnippets
                 $result .= "        if (!\$this->$field instanceof $type && \$this->$field != null) {\n";
                 if ($type == '\DateTime') {
                     $result .= "            \$this->$field = new \DateTime(\$this->$field);\n";
+                } else if (array_key_exists($type, $qualifiedEnums)) {
+                    $result .= "            \$this->$field = " . $type . "::memberByValue(strToUpper(\$this->$field));\n";
                 } else {
                     //Entity
                     $result .= "            \$this->$field = new EntityProxy('" . $type . "Repository', array('" . $foreignKeys[$type] . "' => \$this->$field));\n";
@@ -202,6 +216,29 @@ class PhpSnippets
         $result .= "    }\n";
         $result .= "}";
 
+        return $result;
+    }
+
+    public static function enum($namespace, $name, $values)
+    {
+        $result = self::header($namespace);
+        $result .= "use Eloquent\\Enumeration\\Enumeration;\n";
+        $result .= "\n";
+        $result .= "/**\n";
+        foreach ($values as $value) {
+            $value = strtoupper($value);
+            $result .= " * @method static Gender $value()\n";
+        }
+        $result .= " */\n";
+        $result .= "final class $name extends Enumeration\n";
+        $result .= "{\n";
+        foreach ($values as $key => $value) {
+            $key = strtoupper($key);
+            $value = strtoupper($value);
+
+            $result .= "    const $value = '$key';\n";
+        }
+        $result .= "}\n";
         return $result;
     }
 }

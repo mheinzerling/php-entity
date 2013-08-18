@@ -43,6 +43,19 @@
       "active": {
         "type": "Boolean",
         "default": 0
+      },
+      "gender": {
+        "type": "Gender",
+        "optional": true
+      }
+    }
+  },
+  "enums": {
+    "Gender": {
+      "namespace": "mheinzerling\\test2",
+      "values": {
+        "m": "male",
+        "f": "female"
       }
     }
   }
