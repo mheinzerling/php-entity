@@ -91,7 +91,8 @@ class PhpSnippets
         $result .= "            'table' => '" . strtolower($name) . "',\n";
         $result .= "            'fields' => array(\n";
         $result .= "" . $fields . "),\n";
-        $result .= "            'pk' => array('" . implode("', '", $pk) . "'),\n";
+		$pks="'" . implode("', '", $pk) . "'";
+        $result .= "            'pk' => array(".(count($pk)>0?$pks:'')."),\n";
         $result .= "            'unique' => array(" . $unique . "),\n";
         $result .= "            'autoincrement' => " . ($auto == null ? "null" : "'$auto'") . "\n";
         $result .= "        );\n";
