@@ -79,7 +79,13 @@ class EntityMetaData
             if ($length > 0 && $length <= 255) $column .= " VARCHAR(" . $length . ")";
             else  $column .= " DATETIME";
         } else if (is_subclass_of($type, '\mheinzerling\entity\Entity')) {
-            $column .= " INT(11)";
+			$repoclass=$type."Repository";
+			$repo=new $repoclass();
+			$meta=$repo->getMeta();
+			$pk=$meta['pk'];
+			if (count($pk)!=1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk));
+			$p=$meta['fields'][$pk[0]];
+			$column= $this->toSqlColumn($name,array('type'=>$p['type'],'length'=>$p['length'])); //match foreign key to primary of target
         } else if (is_subclass_of($type, 'Eloquent\Enumeration\Enumeration')) {
             $key = StringUtils::firstCharToLower(FileUtils::basename($type));
             $values = "'" . implode("', '", array_keys($this->fields[$key]['values'])) . "'";
