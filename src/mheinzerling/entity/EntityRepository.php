@@ -61,7 +61,14 @@ abstract class EntityRepository
         if (is_bool($value)) return $value ? '1' : '0';
         if (is_object($value)) {
 
-            if (is_subclass_of($value, '\mheinzerling\entity\Entity')) {
+			if (is_a($value, '\mheinzerling\entity\EntityProxy')) {
+				$prop = new \ReflectionProperty('\mheinzerling\entity\EntityProxy', 'pk');
+				$prop->setAccessible(true);
+				$pk = $prop->getValue($value);
+				if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk)); //TODO
+				return reset($pk);
+			}
+            else if (is_subclass_of($value, '\mheinzerling\entity\Entity')) {
                 $repoClass = get_class($value) . "Repository";
                 $meta = new EntityMetaData(new $repoClass());
                 $pk = $meta->pk;
