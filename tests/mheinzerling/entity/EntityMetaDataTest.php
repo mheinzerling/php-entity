@@ -70,7 +70,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
     public function testSchemaPk()
     {
         $meta = new EntityMetaData(new CredentialRepository(null));
-        $expected = "CREATE TABLE `credential` (`provider` VARCHAR(255) NOT NULL,`uid` VARCHAR(255) NOT NULL,`user` INT(11) NULL,PRIMARY KEY (`provider`,`uid`));";
+        $expected = "CREATE TABLE `credential` (`provider` VARCHAR(255) NOT NULL,`uid` VARCHAR(255) NOT NULL,`user` INT NULL,PRIMARY KEY (`provider`,`uid`));";
         $actual = $meta->buildSchema();
         $this->assertEquals($expected, $actual);
     }

@@ -65,39 +65,47 @@ class EntityMetaData
     private function toSqlColumn($name, $properties)
     {
         $column = "`" . $name . "`";
-        $type = $properties['type'];
-        $length = isset($properties['length']) ? $properties['length'] : 0;
-        if ($type == 'Integer') {
-            $column .= " INT";
-            if ($length) $column .= "(" . $length . ")";
-        } else if ($type == 'Boolean') {
-            $column .= " INT(1)";
-        } else if ($type == 'String') {
-            if ($length > 0 && $length <= 255) $column .= " VARCHAR(" . $length . ")";
-            else  $column .= " TEXT";
-        } else if ($type == '\DateTime') {
-            if ($length > 0 && $length <= 255) $column .= " VARCHAR(" . $length . ")";
-            else  $column .= " DATETIME";
-        } else if (is_subclass_of($type, '\mheinzerling\entity\Entity')) {
-			$repoclass=$type."Repository";
-			$repo=new $repoclass();
-			$meta=$repo->getMeta();
-			$pk=$meta['pk'];
-			if (count($pk)!=1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk));
-			$p=$meta['fields'][$pk[0]];
-			$column= $this->toSqlColumn($name,array('type'=>$p['type'],'length'=>$p['length'])); //match foreign key to primary of target
-        } else if (is_subclass_of($type, 'Eloquent\Enumeration\Enumeration')) {
-            $key = StringUtils::firstCharToLower(FileUtils::basename($type));
-            $values = "'" . implode("', '", array_keys($this->fields[$key]['values'])) . "'";
-            $column .= " ENUM($values)";
-        } else {
-
-            throw new \Exception("Couldn't map >" . $type . "< to a SQL"); //TODO
-        }
+        $column .= $this->toSqlType($name, $properties);
         if (isset($properties['optional'])) $column .= ' NULL';
         else $column .= ' NOT NULL';
         if (isset($properties['default'])) $column .= ' DEFAULT \'' . $properties['default'] . '\'';
         if (isset($properties['auto'])) $column .= ' AUTO_INCREMENT';
+        return $column;
+    }
+
+    private function toSqlType($name, $properties)
+    {
+        $type = $properties['type'];
+        $length = isset($properties['length']) ? $properties['length'] : 0;
+        if ($type == 'Integer') {
+            $column = " INT";
+            if ($length) $column .= "(" . $length . ")";
+        } else if ($type == 'Boolean') {
+            $column = " INT(1)";
+        } else if ($type == 'String') {
+            if ($length > 0 && $length <= 255) $column = " VARCHAR(" . $length . ")";
+            else  $column = " TEXT";
+        } else if ($type == '\DateTime') {
+            if ($length > 0 && $length <= 255) $column = " VARCHAR(" . $length . ")";
+            else  $column = " DATETIME";
+        } else if (is_subclass_of($type, '\mheinzerling\entity\Entity')) {
+            $repoclass = $type . "Repository";
+            $repo = new $repoclass();
+            $meta = $repo->getMeta();
+            $pk = $meta['pk'];
+            if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk));
+            $p = $meta['fields'][$pk[0]];
+            $forward = array();
+            $forward['type'] = $p['type'];
+            if (isset($p['length'])) $forward['length'] = $p['length'];
+            $column = $this->toSqlType($name, $forward); //match foreign key to primary of target
+        } else if (is_subclass_of($type, 'Eloquent\Enumeration\Enumeration')) {
+            $key = StringUtils::firstCharToLower(FileUtils::basename($type));
+            $values = "'" . implode("', '", array_keys($this->fields[$key]['values'])) . "'";
+            $column = " ENUM($values)";
+        } else {
+            throw new \Exception("Couldn't map >" . $type . "< to a SQL"); //TODO
+        }
         return $column;
     }
 }
