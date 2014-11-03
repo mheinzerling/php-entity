@@ -102,7 +102,7 @@ abstract class EntityRepository
         $stmt = $this->connection->prepare('SELECT * FROM `' . $this->meta->table . '`' . $constraint);
         if ($values != null) {
             foreach ($values as $parameter => $value) {
-                $stmt->bindValue(":" . $parameter, $value);
+                $stmt->bindValue(":" . $parameter, $this->mapValue($parameter, $value));
             }
         }
         $stmt->execute();
