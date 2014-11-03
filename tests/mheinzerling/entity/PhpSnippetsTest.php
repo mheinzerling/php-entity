@@ -366,7 +366,7 @@ class SchemaInitializer
 
     public function testEnum()
     {
-        $actual = PhpSnippets::enum("mheinzerling", "gender", array("m" => "male", "f" => "female"));
+        $actual = PhpSnippets::enum("mheinzerling", "Gender", array("m" => "male", "f" => "female"));
         $expected = "<?php
 namespace mheinzerling;
 
@@ -376,7 +376,7 @@ use Eloquent\\Enumeration\\Enumeration;
  * @method static Gender MALE()
  * @method static Gender FEMALE()
  */
-final class gender extends Enumeration
+final class Gender extends Enumeration
 {
     const MALE = 'M';
     const FEMALE = 'F';

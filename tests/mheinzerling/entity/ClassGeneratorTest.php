@@ -31,7 +31,7 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
             "src/mheinzerling/xyz/XyzRepository.php",
             "gensrc/mheinzerling/xyz/BaseXyzRepository.php",
             "gensrc/mheinzerling/xyz/BaseXyz.php",
-            "gensrc/mheinzerling/foo/Foo.php",
+            "src/mheinzerling/foo/Foo.php",
             "gensrc/mheinzerling/SchemaInitializer.php");
 
         $this->assertEquals($expected, $files);

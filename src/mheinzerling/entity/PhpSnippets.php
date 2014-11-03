@@ -228,7 +228,7 @@ class PhpSnippets
         $result .= "/**\n";
         foreach ($values as $value) {
             $value = strtoupper($value);
-            $result .= " * @method static Gender $value()\n";
+            $result .= " * @method static $name $value()\n";
         }
         $result .= " */\n";
         $result .= "final class $name extends Enumeration\n";

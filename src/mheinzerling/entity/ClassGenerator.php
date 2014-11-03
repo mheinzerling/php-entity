@@ -87,8 +87,8 @@ class ClassGenerator
         }
         foreach ($enums as $enum => $property) {
 
-            $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $property['namespace']), FileUtils::UNIX);
-            $files[FileUtils::append($gensrc, $enum . ".php")] = array("content" => PhpSnippets::enum($property['namespace'], $enum, $property['values']), 'overwrite' => true);
+            $src = FileUtils::to(FileUtils::append($this->src, $property['namespace']), FileUtils::UNIX);
+            $files[FileUtils::append($src, $enum . ".php")] = array("content" => PhpSnippets::enum($property['namespace'], $enum, $property['values']), 'overwrite' => false);
         }
 
         if (!isset($this->config['initializer'])) die("Please add a initializer path to the entities.json");
