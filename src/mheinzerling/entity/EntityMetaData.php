@@ -80,6 +80,8 @@ class EntityMetaData
         if ($type == 'Integer') {
             $column = " INT";
             if ($length) $column .= "(" . $length . ")";
+        } else if ($type == 'Double') {
+            $column = " DOUBLE";
         } else if ($type == 'Boolean') {
             $column = " INT(1)";
         } else if ($type == 'String') {
@@ -100,8 +102,13 @@ class EntityMetaData
             if (isset($p['length'])) $forward['length'] = $p['length'];
             $column = $this->toSqlType($name, $forward); //match foreign key to primary of target
         } else if (is_subclass_of($type, 'Eloquent\Enumeration\Enumeration')) {
-            $key = StringUtils::firstCharToLower(FileUtils::basename($type));
-            $values = "'" . implode("', '", array_keys($this->fields[$key]['values'])) . "'";
+            $v = "";
+            foreach ($this->fields as $f) {
+                if ($f['type'] == $type) {
+                    $v = $f['values'];
+                }
+            }
+            $values = "'" . implode("', '", array_keys($v)) . "'";
             $column = " ENUM($values)";
         } else {
             throw new \Exception("Couldn't map >" . $type . "< to a SQL"); //TODO
