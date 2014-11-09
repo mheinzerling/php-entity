@@ -33,7 +33,7 @@ class PhpSnippets
         return $result;
     }
 
-    public static function baserepository($name, $properties)
+    public static function baserepository($name, $properties, $fks)
     {
         $ns = isset($properties['namespace']) ? $properties['namespace'] : "";
         $fields = '';
@@ -93,6 +93,21 @@ class PhpSnippets
         $result .= "" . $fields . "),\n";
         $pks = "'" . implode("', '", $pk) . "'";
         $result .= "            'pk' => array(" . (count($pk) > 0 ? $pks : '') . "),\n";
+
+        $fkarray = "array(";
+        foreach ($fks as $fk_name => $fk) {
+            $fkarray .= "'" . $fk_name . "' => array(";
+            $fkarray .= "'table' => '" . $fk['table'] . "', ";
+            $fkarray .= "'fields' => array('" . implode("', '", $fk['fields']) . "'), ";
+            $fkarray .= "'update' => '" . $fk['update'] . "', ";
+            $fkarray .= "'delete' => '" . $fk['delete'] . "'";
+            $fkarray .= "), ";
+
+        }
+        if (count($fks) > 0) $fkarray = substr($fkarray, 0, -2);
+        $fkarray .= ")";
+
+        $result .= "            'fks' => " . $fkarray . ",\n";
         $result .= "            'unique' => array(" . $unique . "),\n";
         $result .= "            'autoincrement' => " . ($auto == null ? "null" : "'$auto'") . "\n";
         $result .= "        );\n";
@@ -120,7 +135,7 @@ class PhpSnippets
         return $result;
     }
 
-    public static function base($name, $properties, $foreignKeys, $enums)
+    public static function base($name, $properties, $entities, $enums)
     {
         $qualifiedEnums = array();
         foreach ($enums as $key => $property) {
@@ -167,7 +182,8 @@ class PhpSnippets
                     $result .= "            \$this->$field = " . $type . "::memberByValue(strToUpper(\$this->$field));\n";
                 } else {
                     //Entity
-                    $result .= "            \$this->$field = new EntityProxy('" . $type . "Repository', array('" . $foreignKeys[$type] . "' => \$this->$field));\n";
+                    if (count($entities[basename($type)]['pk']) != 1) throw new \Exception("Not implemented");
+                    $result .= "            \$this->$field = new EntityProxy('" . $type . "Repository', array('" . $entities[basename($type)]['pk'][0] . "' => \$this->$field));\n";
                 }
                 $result .= "        }\n";
 

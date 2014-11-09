@@ -15,11 +15,11 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
     public function testPersistFetchEntityRef()
     {
         PersistenceProvider::setConnection(new TestDatabaseConnection(false));
+        $users = new UserRepository();
+        $users->initialize();
         $credentials = new CredentialRepository();
         $credentials->initialize();
 
-        $users = new UserRepository();
-        $users->initialize();
         LoggingPDO::clearLog();
         $user = new User();
         $user->setNick('mnhg');

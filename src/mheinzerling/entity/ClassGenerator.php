@@ -25,25 +25,60 @@ class ClassGenerator
         $this->gensrc = isset($this->config['gensrc']) ? $this->config['gensrc'] : "gensrc";
     }
 
-    public function getEntities()
+    public function getEntitiesRelations()
     {
         $entities = array();
-        foreach ($this->config['entities'] as $name => $properties) {
+        foreach ($this->getEntities() as $name => $properties) {
             $name = StringUtils::firstCharToUpper($name);
-            $ns = isset($properties['namespace']) ? $properties['namespace'] : "";
-
+            if (isset($properties['namespace']) && !StringUtils::isBlank($properties['namespace'])) {
+                $ns = $properties['namespace'];
+            } else {
+                $ns = "";
+            }
 
             $pk = array();
+            $fks = array();
             foreach ($properties as $field => $property) {
                 if (isset($property['primary']) && $property['primary']) $pk[] = $field;
+
+                if (isset($property['type']) && TypeUtil::isEntityOrEnum($property['type'])) {
+                    if (!isset($this->config['entities'][$property['type']])) continue; //enum
+
+                    $table = StringUtils::firstCharToLower($property['type']);
+                    $fks[$field] = array(
+                        'table' => $table,
+                        'fields' => $entities[$property['type']]['pk'],
+                        'update' => 'CASCADE', 'delete' => 'RESTRICT' //TODO
+                    );
+                }
             }
-            if (count($pk) == 1) $foreignKeys = $pk[0];
-            else $foreignKeys = null;
-            $entities[$name] = array('namespace' => $ns, 'foreignKey' => $foreignKeys);
+            $entities[$name] = array('namespace' => $ns, 'pk' => $pk, 'fks' => $fks);
 
 
         }
         return $entities;
+    }
+
+    public function getEntities()
+    {
+        $sorted = array();
+        foreach ($this->config['entities'] as $name => $entity) {
+            if (isset($sorted[$name])) continue;
+            $this->addSelfAndDependent($this->config['entities'], $sorted, $name, $entity);
+
+        }
+        return $sorted;
+    }
+
+    private function addSelfAndDependent($entities, &$sorted, $name, $entity)
+    {
+        foreach ($entity as $field => $property) {
+            if (isset($property['type']) && TypeUtil::isEntityOrEnum($property['type'])) {
+                if (!isset($entities[$property['type']])) continue; //enum
+                $this->addSelfAndDependent($entities, $sorted, $property['type'], $entities[$property['type']]);
+            }
+        }
+        $sorted[$name] = $entity;
     }
 
     public function getEnums()
@@ -54,13 +89,10 @@ class ClassGenerator
     public function generateFiles()
     {
         $files = array();
-        $entities = $this->getEntities();
+        $entitiesRelations = $this->getEntitiesRelations();
         $enums = $this->getEnums();
-        $foreignKeys = array();
-        foreach ($entities as $name => $e) {
-            if ($e['foreignKey'] != null) $foreignKeys["\\" . $e['namespace'] . "\\" . $name] = $e['foreignKey'];
-        }
-        foreach ($this->config['entities'] as $name => $properties) {
+
+        foreach ($this->getEntities() as $name => $properties) {
             $name = StringUtils::firstCharToUpper($name);
             $ns = isset($properties['namespace']) ? $properties['namespace'] : "";
             $src = FileUtils::to(FileUtils::append($this->src, $ns), FileUtils::UNIX);
@@ -69,8 +101,8 @@ class ClassGenerator
 
             foreach ($properties as $field => &$property) {
                 if (isset ($property['type'])) {
-                    if (isset($entities[$property['type']])) {
-                        $property['type'] = "\\" . $entities[$property['type']]['namespace'] . "\\" . $property['type'];
+                    if (isset($entitiesRelations[$property['type']])) {
+                        $property['type'] = "\\" . $entitiesRelations[$property['type']]['namespace'] . "\\" . $property['type'];
                     }
                     if (isset($enums[$property['type']])) {
                         $property['values'] = $enums[$property['type']]['values'];
@@ -80,9 +112,9 @@ class ClassGenerator
             }
             $files[FileUtils::append($src, $name . ".php")] = array("content" => PhpSnippets::entity($name, $ns), 'overwrite' => false);
             $files[FileUtils::append($src, $name . "Repository.php")] = array("content" => PhpSnippets::repository($name, $ns), 'overwrite' => false);
-            $this->validate($properties, $entities);
-            $files[FileUtils::append($gensrc, "Base" . $name . "Repository.php")] = array("content" => PhpSnippets::baserepository($name, $properties), 'overwrite' => true);
-            $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = array("content" => PhpSnippets::base($name, $properties, $foreignKeys, $enums), 'overwrite' => true);
+            $this->validate($properties, $entitiesRelations);
+            $files[FileUtils::append($gensrc, "Base" . $name . "Repository.php")] = array("content" => PhpSnippets::baserepository($name, $properties, $entitiesRelations[$name]['fks']), 'overwrite' => true);
+            $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = array("content" => PhpSnippets::base($name, $properties, $entitiesRelations, $enums), 'overwrite' => true);
 
         }
         foreach ($enums as $enum => $property) {
@@ -94,7 +126,7 @@ class ClassGenerator
         if (!isset($this->config['initializer'])) die("Please add a initializer path to the entities.json");
         $namespace = $this->config['initializer']; //TODO
         $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $namespace), FileUtils::UNIX);
-        $files[FileUtils::append($gensrc, "SchemaInitializer.php")] = array("content" => PhpSnippets::initializer($namespace, $entities), 'overwrite' => true);
+        $files[FileUtils::append($gensrc, "SchemaInitializer.php")] = array("content" => PhpSnippets::initializer($namespace, $entitiesRelations), 'overwrite' => true);
         return $files;
     }
 

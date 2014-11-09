@@ -15,6 +15,7 @@ class EntityMetaData
     public $table;
     public $fields;
     public $pk = array();
+    public $fks = array();
     public $unique = array();
     public $autoincrement;
 
@@ -31,6 +32,7 @@ class EntityMetaData
         $this->table = $data['table'];
         $this->fields = $data['fields'];
         $this->pk = $data['pk'];
+        $this->fks = $data['fks'];
         $this->unique = $data['unique'];
         $this->autoincrement = $data['autoincrement'];
     }
@@ -44,20 +46,27 @@ class EntityMetaData
     {
         $schema = 'CREATE TABLE `' . $this->table . '` (';
         foreach ($this->fields as $key => $field) {
-            $schema .= $this->toSqlColumn($key, $field) . ',';
+            $schema .= $this->toSqlColumn($key, $field) . ', ';
 
         }
         if (count($this->pk)) {
-            $schema .= 'PRIMARY KEY (`' . implode('`,`', $this->pk) . '`),';
+            $schema .= 'PRIMARY KEY (`' . implode('`,`', $this->pk) . '`), ';
         }
 
         if (count($this->unique)) {
             foreach ($this->unique as $name => $fields) {
-                $schema .= 'UNIQUE KEY `' . $name . '` (`' . implode('`,`', $fields) . '`),';
+                $schema .= 'UNIQUE KEY `idx_' . $this->table . '_' . $name . '` (`' . implode('`,`', $fields) . '`), ';
             }
         }
 
-        $schema = substr($schema, 0, -1);
+        if (count($this->fks)) {
+            foreach ($this->fks as $name => $fk) {
+                $schema .= 'FOREIGN KEY `fk_' . $this->table . '_' . $fk['table'] . '_id`(`' . $name . '`) ' .
+                    'REFERENCES ' . $fk['table'] . '(`' . implode('`,`', $fk['fields']) . '`) ON UPDATE CASCADE ON DELETE RESTRICT, ';
+            }
+        }
+
+        $schema = substr($schema, 0, -2);
         $schema .= ');';
         return $schema;
     }

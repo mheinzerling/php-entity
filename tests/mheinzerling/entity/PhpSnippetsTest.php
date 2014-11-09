@@ -47,7 +47,8 @@ class Foo extends BaseFoo
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
-        $actual = PhpSnippets::baserepository('Credential', $json['entities']['Credential']);
+        $actual = PhpSnippets::baserepository('Credential', $json['entities']['Credential'],
+            array('user' => array('table' => 'user', 'fields' => array('id'), 'update' => 'CASCADE', 'delete' => 'RESTRICT')));
 
         $expected = "<?php
 namespace mheinzerling\\test;
@@ -70,6 +71,7 @@ class BaseCredentialRepository extends EntityRepository
                 'uid' => array('type' => 'String', 'length' => 255, 'primary' => true),
                 'user' => array('type' => '\\mheinzerling\\test2\\User', 'optional' => true)),
             'pk' => array('provider', 'uid'),
+            'fks' => array('user' => array('table' => 'user', 'fields' => array('id'), 'update' => 'CASCADE', 'delete' => 'RESTRICT')),
             'unique' => array(),
             'autoincrement' => null
         );
@@ -86,7 +88,7 @@ class BaseCredentialRepository extends EntityRepository
         $this->assertEquals($expected, $actual);
 
         $json['entities']['User']['gender']['values'] = array('m' => 'male', 'f' => 'female');
-        $actual = PhpSnippets::baserepository('User', $json['entities']['User']);
+        $actual = PhpSnippets::baserepository('User', $json['entities']['User'], array());
         $expected = "<?php
 namespace mheinzerling\\test2;
 
@@ -110,6 +112,7 @@ class BaseUserRepository extends EntityRepository
                 'active' => array('type' => 'Boolean', 'default' => 0),
                 'gender' => array('type' => 'Gender', 'optional' => true, 'values' => array('m' => 'male', 'f' => 'female'))),
             'pk' => array('id'),
+            'fks' => array(),
             'unique' => array('nick'=>array('nick')),
             'autoincrement' => 'id'
         );
@@ -133,7 +136,7 @@ class BaseUserRepository extends EntityRepository
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
-        $foreignKeys = array('\mheinzerling\test2\User' => 'id');
+        $foreignKeys = array('User' => array('pk' => array('id')));
         $actual = PhpSnippets::base('Credential', $json['entities']['Credential'], $foreignKeys, array());
         $expected = '<?php
 namespace mheinzerling\test;
