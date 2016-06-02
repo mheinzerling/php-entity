@@ -182,8 +182,9 @@ class PhpSnippets
                     $result .= "            \$this->$field = " . $type . "::memberByValue(strToUpper(\$this->$field));\n";
                 } else {
                     //Entity
-                    if (count($entities[basename($type)]['pk']) != 1) throw new \Exception("Not implemented");
-                    $result .= "            \$this->$field = new EntityProxy('" . $type . "Repository', array('" . $entities[basename($type)]['pk'][0] . "' => \$this->$field));\n";
+                    $basename = basename(str_replace("\\", "/", $type));
+                    if (count($entities[$basename]['pk']) != 1) throw new \Exception("Not implemented");
+                    $result .= "            \$this->$field = new EntityProxy('" . $type . "Repository', array('" . $entities[$basename]['pk'][0] . "' => \$this->$field));\n";
                 }
                 $result .= "        }\n";
 
