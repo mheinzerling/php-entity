@@ -15,6 +15,6 @@ if ((!$loader = includeIfExists(__DIR__ . '/../vendor/autoload.php')) && (!$load
 
 $application = new \Symfony\Component\Console\Application();
 $application->setName("Entity Utils");
-$application->setVersion("0.1");
+$application->setVersion("2.0.0");
 $application->add(new \mheinzerling\entity\GenerateCommand());
 $application->run();
