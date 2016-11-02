@@ -74,7 +74,7 @@ abstract class EntityRepository
                 if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk)); //TODO
                 $method = "get" . StringUtils::firstCharToUpper($pk[0]);
                 return $value->$method();
-            } elseif (is_subclass_of($value, '\Eloquent\Enumeration\Enumeration')) {
+            } elseif (is_subclass_of($value, '\Eloquent\Enumeration\AbstractEnumeration')) {
                 return $value->value();
             } elseif ($value instanceof \DateTime) {
                 return $value->format("Y-m-d H:i:s");

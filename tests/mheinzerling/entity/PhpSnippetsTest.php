@@ -373,13 +373,13 @@ class SchemaInitializer
         $expected = "<?php
 namespace mheinzerling;
 
-use Eloquent\\Enumeration\\Enumeration;
+use Eloquent\\Enumeration\\AbstractEnumeration;
 
 /**
  * @method static Gender MALE()
  * @method static Gender FEMALE()
  */
-final class Gender extends Enumeration
+final class Gender extends AbstractEnumeration
 {
     const MALE = 'M';
     const FEMALE = 'F';

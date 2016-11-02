@@ -110,7 +110,7 @@ class EntityMetaData
             $forward['type'] = $p['type'];
             if (isset($p['length'])) $forward['length'] = $p['length'];
             $column = $this->toSqlType($name, $forward); //match foreign key to primary of target
-        } else if (is_subclass_of($type, 'Eloquent\Enumeration\Enumeration')) {
+        } else if (is_subclass_of($type, 'Eloquent\Enumeration\AbstractEnumeration')) {
             $v = "";
             foreach ($this->fields as $f) {
                 if ($f['type'] == $type) {

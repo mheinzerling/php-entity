@@ -240,7 +240,7 @@ class PhpSnippets
     public static function enum($namespace, $name, $values)
     {
         $result = self::header($namespace);
-        $result .= "use Eloquent\\Enumeration\\Enumeration;\n";
+        $result .= "use Eloquent\\Enumeration\\AbstractEnumeration;\n";
         $result .= "\n";
         $result .= "/**\n";
         foreach ($values as $value) {
@@ -248,7 +248,7 @@ class PhpSnippets
             $result .= " * @method static $name $value()\n";
         }
         $result .= " */\n";
-        $result .= "final class $name extends Enumeration\n";
+        $result .= "final class $name extends AbstractEnumeration\n";
         $result .= "{\n";
         foreach ($values as $key => $value) {
             $key = strtoupper($key);
