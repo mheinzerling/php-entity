@@ -28,6 +28,7 @@ Simple ORM
 ### 2.0.0
 - update to PHP 7
 - update enumeration library and symphony console
+- !!! PDO toObject seems to change in 7.1; Test broken !!!
 
 ### 1.2.0
 - update dependencies
