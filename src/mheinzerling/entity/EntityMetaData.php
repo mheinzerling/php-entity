@@ -7,16 +7,49 @@ use mheinzerling\commons\StringUtils;
 
 class EntityMetaData
 {
+    /**
+     * @var string
+     */
     public $name;
+    /**
+     * @var string
+     */
     public $repoClass;
+    /**
+     * @var string
+     */
     public $baseClass;
+    /**
+     * @var string
+     */
     public $entityClass;
+    /**
+     * @var string
+     */
     public $namespace;
+    /**
+     * @var string
+     */
     public $table;
+    /**
+     * @var array
+     */
     public $fields;
-    public $pk = array();
-    public $fks = array();
-    public $unique = array();
+    /**
+     * @var string[]
+     */
+    public $pk = [];
+    /**
+     * @var array[]
+     */
+    public $fks = [];
+    /**
+     * @var array
+     */
+    public $unique = [];
+    /**
+     * @var string|null
+     */
     public $autoincrement;
 
     public function __construct(EntityRepository $repo = null)
@@ -37,12 +70,12 @@ class EntityMetaData
         $this->autoincrement = $data['autoincrement'];
     }
 
-    public function dropSchema()
+    public function dropSchema():string
     {
         return "DROP TABLE IF EXISTS `" . $this->table . "`;";
     }
 
-    public function buildSchema()
+    public function buildSchema():string
     {
         $schema = 'CREATE TABLE `' . $this->table . '` (';
         foreach ($this->fields as $key => $field) {
@@ -71,7 +104,7 @@ class EntityMetaData
         return $schema;
     }
 
-    private function toSqlColumn($name, $properties)
+    private function toSqlColumn(string $name, array $properties) :string
     {
         $column = "`" . $name . "`";
         $column .= $this->toSqlType($name, $properties);
@@ -82,7 +115,7 @@ class EntityMetaData
         return $column;
     }
 
-    private function toSqlType($name, $properties)
+    private function toSqlType(string $name, array $properties):string
     {
         $type = $properties['type'];
         $length = isset($properties['length']) ? $properties['length'] : 0;
@@ -101,12 +134,15 @@ class EntityMetaData
             else  $column = " DATETIME";
         } else if (is_subclass_of($type, '\mheinzerling\entity\Entity')) {
             $repoclass = $type . "Repository";
+            /**
+             * @var $repo EntityRepository
+             */
             $repo = new $repoclass();
             $meta = $repo->getMeta();
             $pk = $meta['pk'];
             if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk));
             $p = $meta['fields'][$pk[0]];
-            $forward = array();
+            $forward = [];
             $forward['type'] = $p['type'];
             if (isset($p['length'])) $forward['length'] = $p['length'];
             $column = $this->toSqlType($name, $forward); //match foreign key to primary of target
@@ -115,6 +151,7 @@ class EntityMetaData
             foreach ($this->fields as $f) {
                 if ($f['type'] == $type) {
                     $v = $f['values'];
+                    break;
                 }
             }
             $values = "'" . implode("', '", array_keys($v)) . "'";

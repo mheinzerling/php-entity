@@ -5,7 +5,7 @@ namespace mheinzerling\entity;
 
 class Entity
 {
-    public function this()
+    public function this():Entity
     {
         return $this;
     }

@@ -16,7 +16,7 @@ namespace foo\foo;
 class FooRepository extends BaseFooRepository
 {
 }';
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
     }
 
     public function testRepositoryWithoutNamespace()
@@ -26,7 +26,7 @@ class FooRepository extends BaseFooRepository
 class FooRepository extends BaseFooRepository
 {
 }';
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
     }
 
     public function testEntity()
@@ -38,7 +38,7 @@ namespace foo\foo;
 class Foo extends BaseFoo
 {
 }';
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
     }
 
     public function testMetaData()
@@ -48,7 +48,7 @@ class Foo extends BaseFoo
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
         $actual = PhpSnippets::baserepository('Credential', $json['entities']['Credential'],
-            array('user' => array('table' => 'user', 'fields' => array('id'), 'update' => 'CASCADE', 'delete' => 'RESTRICT')));
+            ['user' => ['table' => 'user', 'fields' => ['id'], 'update' => 'CASCADE', 'delete' => 'RESTRICT']]);
 
         $expected = "<?php
 namespace mheinzerling\\test;
@@ -85,10 +85,10 @@ class BaseCredentialRepository extends EntityRepository
         return \$this->fetchUnique(\"WHERE `provider`=:provider AND `uid`=:uid\", array('provider'=>\$provider, 'uid'=>\$uid));
     }
 }";
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
 
-        $json['entities']['User']['gender']['values'] = array('m' => 'male', 'f' => 'female');
-        $actual = PhpSnippets::baserepository('User', $json['entities']['User'], array());
+        $json['entities']['User']['gender']['values'] = ['m' => 'male', 'f' => 'female'];
+        $actual = PhpSnippets::baserepository('User', $json['entities']['User'], []);
         $expected = "<?php
 namespace mheinzerling\\test2;
 
@@ -126,7 +126,7 @@ class BaseUserRepository extends EntityRepository
         return \$this->fetchUnique(\"WHERE `id`=:id\", array('id'=>\$id));
     }
 }";
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
 
     }
 
@@ -136,8 +136,8 @@ class BaseUserRepository extends EntityRepository
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
-        $foreignKeys = array('User' => array('pk' => array('id')));
-        $actual = PhpSnippets::base('Credential', $json['entities']['Credential'], $foreignKeys, array());
+        $foreignKeys = ['User' => ['pk' => ['id']]];
+        $actual = PhpSnippets::base('Credential', $json['entities']['Credential'], $foreignKeys, []);
         $expected = '<?php
 namespace mheinzerling\test;
 
@@ -217,9 +217,9 @@ abstract class BaseCredential extends Entity
     }
 
 }';
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
         $json['entities']['User']['gender']['type'] = "\\mheinzerling\\test2\\Gender";
-        $actual = PhpSnippets::base('User', $json['entities']['User'], array(), array("Gender" => array('namespace' => 'mheinzerling\\test2')));
+        $actual = PhpSnippets::base('User', $json['entities']['User'], [], ["Gender" => ['namespace' => 'mheinzerling\\test2']]);
         $expected = '<?php
 namespace mheinzerling\test2;
 
@@ -258,7 +258,7 @@ abstract class BaseUser extends Entity
             $this->birthday = new \DateTime($this->birthday);
         }
         if (!$this->gender instanceof \mheinzerling\test2\Gender && $this->gender != null) {
-            $this->gender = \mheinzerling\test2\Gender::memberByValue(strToUpper($this->gender));
+            $this->gender = \mheinzerling\test2\Gender::memberByValue(strtoupper($this->gender));
         }
     }
 
@@ -343,14 +343,14 @@ abstract class BaseUser extends Entity
     }
 
 }';
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
 
     }
 
     public function testInitializer()
     {
-        $actual = PhpSnippets::initializer("mheinzerling", array('Credential' => array('namespace' => 'mheinzerling\test\\'),
-            'User' => array('namespace' => 'mheinzerling\test2\\')));
+        $actual = PhpSnippets::initializer("mheinzerling", ['Credential' => ['namespace' => 'mheinzerling\test\\'],
+            'User' => ['namespace' => 'mheinzerling\test2\\']]);
         $expected = "<?php
 namespace mheinzerling;
 
@@ -364,12 +364,12 @@ class SchemaInitializer
         \$repo->initialize();
     }
 }";
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
     }
 
     public function testEnum()
     {
-        $actual = PhpSnippets::enum("mheinzerling", "Gender", array("m" => "male", "f" => "female"));
+        $actual = PhpSnippets::enum("mheinzerling", "Gender", ["m" => "male", "f" => "female"]);
         $expected = "<?php
 namespace mheinzerling;
 
@@ -385,6 +385,11 @@ final class Gender extends AbstractEnumeration
     const FEMALE = 'F';
 }
 ";
-        $this->assertEquals($expected, $actual);
+        $this->assertEqualsIgnoreLineEnding($expected, $actual);
+    }
+
+    public function assertEqualsIgnoreLineEnding(string $expected, string $actual)
+    {
+        static::assertEquals(str_replace("\r", '', $expected), str_replace("\r", '', $actual));
     }
 }

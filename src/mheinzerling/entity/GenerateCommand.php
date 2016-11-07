@@ -15,7 +15,7 @@ class GenerateCommand extends Command
     protected function configure()
     {
         $this->setName('generate')
-            ->setAliases(array('gen'))
+            ->setAliases(['gen'])
             ->setDescription('Generate the classes described in the entities.json')
             ->addArgument('file', InputArgument::REQUIRED, 'Location of the entities.json')
             ->addOption("force", "f", InputOption::VALUE_NONE, "Overwrite all existing files, also in the source directory");

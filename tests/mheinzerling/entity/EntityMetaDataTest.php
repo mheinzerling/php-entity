@@ -17,48 +17,48 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
     {
         $repo = new UserRepository(null);
         $actual = new EntityMetaData($repo);
-        $expected = array(
+        $expected = [
             'name' => 'User',
             'repoClass' => 'mheinzerling\test2\UserRepository',
             'baseClass' => 'mheinzerling\test2\BaseUser',
             'entityClass' => 'mheinzerling\test2\User',
             'namespace' => 'mheinzerling\test2',
             'table' => 'user',
-            'fields' => array(
-                'id' => array('type' => 'Integer', 'auto' => 1, 'primary' => 1),
-                'nick' => array('type' => 'String', 'length' => 100),
-                'birthday' => array('type' => '\DateTime', 'optional' => 1),
-                'active' => array('type' => 'Boolean', 'default' => 0),
-                'gender' => array('type' => '\mheinzerling\test2\Gender', 'optional' => 1, 'values' => array('m' => 'male', 'f' => 'female'))),
-            'pk' => array('id'),
-            'fks' => array(),
-            'unique' => array('nick' => array('nick')),
+            'fields' => [
+                'id' => ['type' => 'Integer', 'auto' => 1, 'primary' => 1],
+                'nick' => ['type' => 'String', 'length' => 100],
+                'birthday' => ['type' => '\DateTime', 'optional' => 1],
+                'active' => ['type' => 'Boolean', 'default' => 0],
+                'gender' => ['type' => '\mheinzerling\test2\Gender', 'optional' => 1, 'values' => ['m' => 'male', 'f' => 'female']]],
+            'pk' => ['id'],
+            'fks' => [],
+            'unique' => ['nick' => ['nick']],
             'autoincrement' => 'id'
-        );
-        $this->assertEquals($expected, (array)$actual);
+        ];
+        static::assertEquals($expected, (array)$actual);
     }
 
     public function testMetaDataPk()
     {
         $repo = new CredentialRepository(null);
         $actual = new EntityMetaData($repo);
-        $expected = array(
+        $expected = [
             'name' => 'Credential',
             'repoClass' => 'mheinzerling\test\CredentialRepository',
             'baseClass' => 'mheinzerling\test\BaseCredential',
             'entityClass' => 'mheinzerling\test\Credential',
             'namespace' => 'mheinzerling\test',
             'table' => 'credential',
-            'fields' => array(
-                'provider' => array('type' => 'String', 'length' => 255, 'primary' => 1),
-                'uid' => array('type' => 'String', 'length' => 255, 'primary' => 1),
-                'user' => array('type' => '\mheinzerling\test2\User', 'optional' => 1)),
-            'pk' => array('provider', 'uid'),
-            'fks' => array('user' => array('table' => 'user', 'fields' => array('id'), 'update' => 'CASCADE', 'delete' => 'RESTRICT')),
-            'unique' => array(),
+            'fields' => [
+                'provider' => ['type' => 'String', 'length' => 255, 'primary' => 1],
+                'uid' => ['type' => 'String', 'length' => 255, 'primary' => 1],
+                'user' => ['type' => '\mheinzerling\test2\User', 'optional' => 1]],
+            'pk' => ['provider', 'uid'],
+            'fks' => ['user' => ['table' => 'user', 'fields' => ['id'], 'update' => 'CASCADE', 'delete' => 'RESTRICT']],
+            'unique' => [],
             'autoincrement' => null
-        );
-        $this->assertEquals($expected, (array)$actual);
+        ];
+        static::assertEquals($expected, (array)$actual);
     }
 
     public function testSchema()
@@ -68,7 +68,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
             "PRIMARY KEY (`id`), " .
             "UNIQUE KEY `idx_user_nick` (`nick`));";
         $actual = $meta->buildSchema();
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testSchemaPk()
@@ -79,6 +79,6 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
             "FOREIGN KEY `fk_credential_user_id`(`user`) REFERENCES user(`id`) ON UPDATE CASCADE ON DELETE RESTRICT" .
             ");";
         $actual = $meta->buildSchema();
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 }

@@ -9,7 +9,13 @@ use mheinzerling\commons\StringUtils;
 
 abstract class EntityRepository
 {
+    /**
+     * @var \PDO
+     */
     private $connection;
+    /**
+     * @var EntityMetaData
+     */
     public $meta; //TODO
 
     public function __construct(\PDO $connection = null)
@@ -19,20 +25,25 @@ abstract class EntityRepository
 
     }
 
-    public function initialize()
+
+    public function initialize():int
     {
         return $this->connection->exec($this->meta->dropSchema() . $this->meta->buildSchema());
     }
 
-    public function isInitialized()
+    public function isInitialized():bool
     {
         $query = "SHOW TABLES LIKE '" . $this->meta->table . "'";
         return $this->connection->query($query)->rowCount() == 1;
     }
 
+    /**
+     * @param Entity $entity
+     * @return void
+     */
     public function persist(Entity &$entity)
     {
-        $data = array();
+        $data = [];
         foreach ($this->meta->fields as $key => $field) {
             $method = "get" . StringUtils::firstCharToUpper($key);
             $data[$key] = $this->mapValue($key, $entity->$method());
@@ -55,7 +66,7 @@ abstract class EntityRepository
         }
     }
 
-    private function mapValue($key, $value)
+    private function mapValue(string $key, $value)
     {
         if (is_string($value) || is_numeric($value) || is_null($value)) return $value;
         if (is_bool($value)) return $value ? '1' : '0';
@@ -89,10 +100,7 @@ abstract class EntityRepository
 
     public abstract function getMeta();
 
-    /**
-     * @return \PDOStatement
-     */
-    private function prepareStatement($constraint, $values = null)
+    private function prepareStatement(string $constraint = null, array $values = null):\PDOStatement
     {
         if ($constraint == null) {
             $constraint = '';
@@ -109,26 +117,44 @@ abstract class EntityRepository
         return $stmt;
     }
 
-    public function fetchAll($constraint = null, $values = null)
+    /**
+     * @param null|string $constraint
+     * @param array|null $values
+     * @return bool|Entity[]
+     */
+    public function fetchAll(string $constraint = null, array $values = null)
     {
         $stmt = $this->prepareStatement($constraint, $values);
         return $stmt->fetchAll(\PDO::FETCH_CLASS, $this->meta->entityClass);
     }
 
-    public function fetchUnique($constraint = null, $values = null)
+    /**
+     * @param string|null $constraint
+     * @param array|null $values
+     * @return Entity|bool
+     */
+    public function fetchUnique(string $constraint = null, array $values = null)
     {
         $stmt = $this->prepareStatement($constraint, $values);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, $this->meta->entityClass);
         return $stmt->fetch();
     }
 
+    /**
+     * @param string|array $pk
+     * @return bool|Entity
+     * @throws \Exception
+     */
     public function fetchByPk($pk)
     {
         if (is_array($pk) || count($this->meta->pk) != 1) throw new \Exception("Unsupported operation");
         $key = $this->meta->pk[0];
-        return $this->fetchUnique("WHERE `$key`=:$key", array($key => $pk));
+        return $this->fetchUnique("WHERE `$key`=:$key", [$key => $pk]);
     }
 
+    /**
+     * @return \PDO
+     */
     protected function getConnection()
     {
         return $this->connection;

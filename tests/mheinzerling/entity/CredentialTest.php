@@ -24,9 +24,9 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
         $user = new User();
         $user->setNick('mnhg');
         $user->setGender(Gender::MALE());
-        $this->assertEquals(null, $user->getId());
+        static::assertEquals(null, $user->getId());
         $users->persist($user);
-        $this->assertEquals(1, $user->getId());
+        static::assertEquals(1, $user->getId());
 
         $credential = new Credential();
         $credential->setProvider('openid');
@@ -36,15 +36,15 @@ class CredentialsTest extends \PHPUnit_Framework_TestCase
         $credentials->persist($credential);
 
         $dbCred = $credentials->fetchByProviderAndUid('openid', 'http://www.myopenid.com/mnhg');
-        $this->assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
+        static::assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
         $dbUser = $dbCred->getUser(); //only proxy
-        $this->assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
+        static::assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
         $dbId = $dbUser->getId(); // only pk of proxy
-        $this->assertEquals(1, $dbId);
-        $this->assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
-        $this->assertEquals("mnhg", $dbUser->getNick());
-        $this->assertEquals(Gender::MALE(), $dbUser->getGender());
-        $this->assertEquals(4, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
+        static::assertEquals(1, $dbId);
+        static::assertEquals(3, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
+        static::assertEquals("mnhg", $dbUser->getNick());
+        static::assertEquals(Gender::MALE(), $dbUser->getGender());
+        static::assertEquals(4, LoggingPDO::numberOfQueries(), LoggingPDO::getLog());
         $users->persist($dbUser);
     }
 }

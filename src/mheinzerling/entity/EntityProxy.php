@@ -8,46 +8,48 @@ use mheinzerling\commons\StringUtils;
 
 class EntityProxy extends Entity
 {
-
+    /**
+     * @var Entity
+     */
     private $entity;
+    /**
+     * @var string
+     */
     private $repo;
     private $pk;
 
-    public function __construct($repo, array $pk)
+    public function __construct(string $repo, array $pk)
     {
         $this->repo = $repo;
         $this->pk = $pk;
     }
 
-    /**
-     * @return EntityRepository
-     */
-    private function createRepo()
+    private function createRepo(): EntityRepository
     {
         return new $this->repo();
     }
 
-    public function __call($function_name, $parameters)
+    public function __call(string $functionName, array $parameters = null)
     {
         if ($this->entity == null) {
-            $r = $this->createRepo();
-            $pkName = $r->meta->pk[0];
+            $repo = $this->createRepo();
+            $pkName = $repo->meta->pk[0];
             $pkGetter = 'get' . StringUtils::firstCharToUpper($pkName); //TODO guard
-            if ($function_name == $pkGetter) {
+            if ($functionName == $pkGetter) {
                 return $this->pk[$pkName];
             }
             $values = array_values($this->pk);
-            $this->entity = $r->fetchByPk($values[0]); //TODO composed pk
+            $this->entity = $repo->fetchByPk($values[0]); //TODO composed pk
         }
-        return call_user_func_array(array($this->entity, $function_name), $parameters);
+        return call_user_func_array([$this->entity, $functionName], $parameters);
     }
 
-    public function this()
+    public function this() : Entity
     {
         if ($this->entity == null) {
-            $r = $this->createRepo();
+            $repo = $this->createRepo();
             $values = array_values($this->pk);
-            $this->entity = $r->fetchByPk($values[0]); //TODO composed pk
+            $this->entity = $repo->fetchByPk($values[0]); //TODO composed pk
         }
         return $this->entity;
     }

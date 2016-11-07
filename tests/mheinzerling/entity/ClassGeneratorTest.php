@@ -18,7 +18,7 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
         $gen = new ClassGenerator(JsonUtils::parseToArray($json));
 
         $files = array_keys($gen->generateFiles());
-        $expected = array(
+        $expected = [
             "src/mheinzerling/xyz/Xyz.php",
             "src/mheinzerling/xyz/XyzRepository.php",
             "gensrc/mheinzerling/xyz/BaseXyzRepository.php",
@@ -32,9 +32,9 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
             "gensrc/BaseMnoRepository.php",
             "gensrc/BaseMno.php",
             "src/mheinzerling/foo/Foo.php",
-            "gensrc/mheinzerling/SchemaInitializer.php");
+            "gensrc/mheinzerling/SchemaInitializer.php"];
 
-        $this->assertEquals($expected, $files);
+        static::assertEquals($expected, $files);
     }
 
     public function testNamespaceAndForeignKeys()
@@ -42,13 +42,13 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
         $root = realpath(__DIR__ . "/../../..");
         $gen = ClassGenerator::loadFromFile($root . "/resources/tests/entities.json");
         $actual = $gen->getEntitiesRelations();
-        $expected = array(
-            'User' => array('namespace' => 'mheinzerling\test2', 'pk' => array('id'), 'fks' => array()),
-            'Credential' => array('namespace' => 'mheinzerling\test', 'pk' => array("provider", "uid"),
-                'fks' => array('user' => array('table' => 'user', 'fields' => array('id'), 'update' => 'CASCADE', 'delete' => 'RESTRICT')))
+        $expected = [
+            'User' => ['namespace' => 'mheinzerling\test2', 'pk' => ['id'], 'fks' => []],
+            'Credential' => ['namespace' => 'mheinzerling\test', 'pk' => ["provider", "uid"],
+                'fks' => ['user' => ['table' => 'user', 'fields' => ['id'], 'update' => 'CASCADE', 'delete' => 'RESTRICT']]]
 
-        );
-        $this->assertEquals($expected, $actual);
+        ];
+        static::assertEquals($expected, $actual);
 
     }
 }

@@ -13,7 +13,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $conn = new TestDatabaseConnection();
         $repo = new UserRepository($conn);
         $repo->initialize();
-        $this->assertEquals(array(), $repo->fetchAll());
+        static::assertEquals([], $repo->fetchAll());
     }
 
     public function testPersistFetchAll()
@@ -29,7 +29,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $repo->persist($foo);
         $repo->persist($bar); //TODO
 
-        $this->assertEquals(array($foo, $bar), $repo->fetchAll());
+        static::assertEquals([$foo, $bar], $repo->fetchAll());
     }
 
     public function testFetchUserById()
@@ -46,6 +46,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $bar->setNick("bar");
         $repo->persist($bar);
 
-        $this->assertEquals($bar, $repo->fetchById($bar->getId()));
+        static::assertEquals($bar, $repo->fetchById($bar->getId()));
     }
 }
