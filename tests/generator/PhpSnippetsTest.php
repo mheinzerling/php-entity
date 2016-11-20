@@ -1,5 +1,6 @@
 <?php
-namespace mheinzerling\entity;
+
+namespace mheinzerling\entity\generator;
 
 
 use mheinzerling\commons\JsonUtils;
@@ -43,7 +44,7 @@ class Foo extends BaseFoo
 
     public function testMetaData()
     {
-        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../resources/tests/entities.json"));
+        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../../resources/tests/entities.json"));
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
@@ -53,7 +54,7 @@ class Foo extends BaseFoo
         $expected = "<?php
 namespace mheinzerling\\test;
 
-use mheinzerling\\entity\\EntityRepository;
+use mheinzerling\\entity\\orm\\EntityRepository;
 
 class BaseCredentialRepository extends EntityRepository
 {
@@ -92,7 +93,7 @@ class BaseCredentialRepository extends EntityRepository
         $expected = "<?php
 namespace mheinzerling\\test2;
 
-use mheinzerling\\entity\\EntityRepository;
+use mheinzerling\\entity\\orm\EntityRepository;
 
 class BaseUserRepository extends EntityRepository
 {
@@ -132,7 +133,7 @@ class BaseUserRepository extends EntityRepository
 
     public function testBase()
     {
-        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../resources/tests/entities.json"));
+        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../../resources/tests/entities.json"));
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
@@ -141,8 +142,8 @@ class BaseUserRepository extends EntityRepository
         $expected = '<?php
 namespace mheinzerling\test;
 
-use mheinzerling\entity\Entity;
-use mheinzerling\entity\EntityProxy;
+use mheinzerling\entity\orm\Entity;
+use mheinzerling\entity\orm\EntityProxy;
 
 abstract class BaseCredential extends Entity
 {
@@ -223,7 +224,7 @@ abstract class BaseCredential extends Entity
         $expected = '<?php
 namespace mheinzerling\test2;
 
-use mheinzerling\entity\Entity;
+use mheinzerling\entity\orm\Entity;
 
 abstract class BaseUser extends Entity
 {

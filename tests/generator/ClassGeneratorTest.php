@@ -1,6 +1,6 @@
 <?php
 
-namespace mheinzerling\entity;
+namespace mheinzerling\entity\generator;
 
 
 use mheinzerling\commons\JsonUtils;
@@ -39,7 +39,7 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testNamespaceAndForeignKeys()
     {
-        $root = realpath(__DIR__ . "/../../entity");
+        $root = realpath(__DIR__ . "/../..");
         $gen = ClassGenerator::loadFromFile($root . "/resources/tests/entities.json");
         $actual = $gen->getEntitiesRelations();
         $expected = [

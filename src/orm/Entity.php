@@ -1,7 +1,6 @@
 <?php
 
-namespace mheinzerling\entity;
-
+namespace mheinzerling\entity\orm;
 
 class Entity
 {

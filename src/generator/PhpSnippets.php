@@ -1,6 +1,6 @@
 <?php
 
-namespace mheinzerling\entity;
+namespace mheinzerling\entity\generator;
 
 
 use mheinzerling\commons\FileUtils;
@@ -76,7 +76,7 @@ class PhpSnippets
         $fields = substr($fields, 0, -2);
 
         $result = self::header($ns);
-        $result .= "use mheinzerling\\entity\\EntityRepository;\n\n";
+        $result .= "use mheinzerling\\entity\\orm\\EntityRepository;\n\n";
         $result .= "class Base" . $name . "Repository extends EntityRepository\n";
         $result .= "{\n";
         $result .= "    public function getMeta()\n";
@@ -158,8 +158,8 @@ class PhpSnippets
         }
 
         $result = self::header($namespace);
-        $result .= "use mheinzerling\\entity\\Entity;\n";
-        if ($requireProxy) $result .= "use mheinzerling\\entity\\EntityProxy;\n";
+        $result .= "use mheinzerling\\entity\\orm\\Entity;\n";
+        if ($requireProxy) $result .= "use mheinzerling\\entity\\orm\\EntityProxy;\n";
         $result .= "\n";
         $result .= "abstract class Base$name extends Entity\n";
         $result .= "{\n";

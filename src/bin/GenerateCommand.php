@@ -1,14 +1,15 @@
 <?php
 
-namespace mheinzerling\entity;
+namespace mheinzerling\entity\bin;
 
 
+use mheinzerling\commons\FileUtils;
+use mheinzerling\entity\generator\ClassGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use mheinzerling\commons\FileUtils;
 
 class GenerateCommand extends Command
 {
@@ -21,6 +22,7 @@ class GenerateCommand extends Command
             ->addOption("force", "f", InputOption::VALUE_NONE, "Overwrite all existing files, also in the source directory");
     }
 
+    /** @noinspection PhpMissingParentCallCommonInspection */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $file = $input->getArgument('file');

@@ -1,6 +1,6 @@
 <?php
 
-namespace mheinzerling\entity;
+namespace mheinzerling\entity\orm;
 
 
 use mheinzerling\commons\database\ConnectionProvider;
@@ -72,13 +72,13 @@ abstract class EntityRepository
         if (is_bool($value)) return $value ? '1' : '0';
         if (is_object($value)) {
 
-            if (is_a($value, '\mheinzerling\entity\EntityProxy')) {
-                $prop = new \ReflectionProperty('\mheinzerling\entity\EntityProxy', 'pk');
+            if (is_a($value, EntityProxy::class)) {
+                $prop = new \ReflectionProperty(EntityProxy::class, 'pk');
                 $prop->setAccessible(true);
                 $pk = $prop->getValue($value);
                 if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk)); //TODO
                 return reset($pk);
-            } else if (is_subclass_of($value, '\mheinzerling\entity\Entity')) {
+            } else if (is_subclass_of($value, Entity::class)) {
                 $repoClass = get_class($value) . "Repository";
                 $meta = new EntityMetaData(new $repoClass());
                 $pk = $meta->pk;
@@ -136,6 +136,7 @@ abstract class EntityRepository
     public function fetchUnique(string $constraint = null, array $values = null)
     {
         $stmt = $this->prepareStatement($constraint, $values);
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
         $stmt->setFetchMode(\PDO::FETCH_CLASS, $this->meta->entityClass);
         return $stmt->fetch();
     }

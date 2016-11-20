@@ -1,13 +1,14 @@
 #!/usr/bin/env php
 <?php
-function includeIfExists($file)
+function includeIfExists($file):bool
 {
     if (file_exists($file)) {
-        return include $file;
+        return (include $file) !== false;
     }
+    return false;
 }
 
-if ((!$loader = includeIfExists(__DIR__ . '/../vendor/autoload.php')) && (!$loader = includeIfExists(__DIR__ . '/../../../autoload.php'))) {
+if ((!includeIfExists(__DIR__ . '/../vendor/autoload.php')) && (!includeIfExists(__DIR__ . '/../../../autoload.php'))) {
     die('You must set up the project dependencies, run the following commands:' . PHP_EOL .
         'curl -s http://getcomposer.org/installer | php' . PHP_EOL .
         'php composer.phar install' . PHP_EOL);
@@ -16,5 +17,5 @@ if ((!$loader = includeIfExists(__DIR__ . '/../vendor/autoload.php')) && (!$load
 $application = new \Symfony\Component\Console\Application();
 $application->setName("Entity Utils");
 $application->setVersion("2.0.0");
-$application->add(new \mheinzerling\entity\GenerateCommand());
+$application->add(new \mheinzerling\entity\bin\GenerateCommand());
 $application->run();

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace mheinzerling\entity;
+namespace mheinzerling\entity\orm;
 
 
 use mheinzerling\commons\StringUtils;
@@ -44,6 +44,7 @@ class EntityProxy extends Entity
         return call_user_func_array([$this->entity, $functionName], $parameters);
     }
 
+    /** @noinspection PhpMissingParentCallCommonInspection */
     public function this() : Entity
     {
         if ($this->entity == null) {

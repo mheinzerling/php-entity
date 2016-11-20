@@ -1,9 +1,8 @@
 <?php
+
 namespace mheinzerling\entity;
 
 use mheinzerling\commons\database\ConnectionProvider;
-use mheinzerling\commons\database\LoggingPDO;
-use mheinzerling\commons\database\PersistenceProvider;
 use mheinzerling\commons\database\TestDatabaseConnection;
 use mheinzerling\test\Credential;
 use mheinzerling\test\CredentialRepository;

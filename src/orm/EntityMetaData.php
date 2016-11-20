@@ -1,9 +1,7 @@
 <?php
-namespace mheinzerling\entity;
 
+namespace mheinzerling\entity\orm;
 
-use mheinzerling\commons\FileUtils;
-use mheinzerling\commons\StringUtils;
 
 class EntityMetaData
 {
@@ -132,7 +130,7 @@ class EntityMetaData
         } else if ($type == '\DateTime') {
             if ($length > 0 && $length <= 255) $column = " VARCHAR(" . $length . ")";
             else  $column = " DATETIME";
-        } else if (is_subclass_of($type, '\mheinzerling\entity\Entity')) {
+        } else if (is_subclass_of($type, Entity::class)) {
             $repoclass = $type . "Repository";
             /**
              * @var $repo EntityRepository

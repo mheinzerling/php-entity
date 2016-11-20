@@ -1,11 +1,11 @@
 <?php
 
-namespace mheinzerling\entity;
-
+namespace mheinzerling\entity\generator;
 
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
 use mheinzerling\commons\StringUtils;
+use mheinzerling\entity\TypeUtil;
 
 class ClassGenerator
 {

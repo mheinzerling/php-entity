@@ -1,5 +1,6 @@
 <?php
-namespace mheinzerling\entity;
+
+namespace mheinzerling\entity\orm;
 
 use mheinzerling\commons\database\TestDatabaseConnection;
 use mheinzerling\test2\User;
