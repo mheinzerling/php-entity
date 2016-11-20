@@ -43,7 +43,7 @@ class Foo extends BaseFoo
 
     public function testMetaData()
     {
-        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../../../resources/tests/entities.json"));
+        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../resources/tests/entities.json"));
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';
@@ -132,7 +132,7 @@ class BaseUserRepository extends EntityRepository
 
     public function testBase()
     {
-        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../../../resources/tests/entities.json"));
+        $json = JsonUtils::parseToArray(file_get_contents(__DIR__ . "/../resources/tests/entities.json"));
 
 
         $json['entities']['Credential']['user']['type'] = '\mheinzerling\test2\User';

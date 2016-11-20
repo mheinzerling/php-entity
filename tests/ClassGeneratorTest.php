@@ -39,7 +39,7 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testNamespaceAndForeignKeys()
     {
-        $root = realpath(__DIR__ . "/../../..");
+        $root = realpath(__DIR__ . "/../../entity");
         $gen = ClassGenerator::loadFromFile($root . "/resources/tests/entities.json");
         $actual = $gen->getEntitiesRelations();
         $expected = [

@@ -3,8 +3,8 @@
 namespace mheinzerling\entity;
 
 
+use mheinzerling\commons\database\ConnectionProvider;
 use mheinzerling\commons\database\DatabaseUtils;
-use mheinzerling\commons\database\PersistenceProvider;
 use mheinzerling\commons\StringUtils;
 
 abstract class EntityRepository
@@ -20,7 +20,7 @@ abstract class EntityRepository
 
     public function __construct(\PDO $connection = null)
     {
-        $this->connection = $connection == null ? PersistenceProvider::getConnection() : $connection;
+        $this->connection = $connection == null ? ConnectionProvider::get() : $connection;
         $this->meta = new EntityMetaData($this);
 
     }
@@ -62,7 +62,7 @@ abstract class EntityRepository
             $method = "set" . StringUtils::firstCharToUpper($this->meta->autoincrement);
             $entity->$method($this->connection->lastInsertId());
         } else {
-            DatabaseUtils::insertOrUpdateAssoc($this->connection, $this->meta->table, $data);
+            DatabaseUtils::insertAssoc($this->connection, $this->meta->table, $data, DatabaseUtils::DUPLICATE_UPDATE);
         }
     }
 

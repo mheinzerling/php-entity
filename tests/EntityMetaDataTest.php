@@ -1,7 +1,7 @@
 <?php
 namespace mheinzerling\entity;
 
-use mheinzerling\commons\database\PersistenceProvider;
+use mheinzerling\commons\database\ConnectionProvider;
 use mheinzerling\commons\database\TestDatabaseConnection;
 use mheinzerling\test\CredentialRepository;
 use mheinzerling\test2\UserRepository;
@@ -10,7 +10,7 @@ class EntityMetaDataTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        PersistenceProvider::setConnection(new TestDatabaseConnection());
+        ConnectionProvider::set(new TestDatabaseConnection());
     }
 
     public function testMetaDataRevision()
