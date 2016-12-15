@@ -6,12 +6,12 @@
     "Credential": {
       "namespace": "mheinzerling\\test",
       "provider": {
-        "type": "String",
+        "type": "string",
         "length": 255,
         "primary": true
       },
       "uid": {
-        "type": "String",
+        "type": "string",
         "length": 255,
         "primary": true
       },
@@ -28,12 +28,12 @@
         ]
       },
       "id": {
-        "type": "Integer",
+        "type": "int",
         "auto": true,
         "primary": true
       },
       "nick": {
-        "type": "String",
+        "type": "string",
         "length": 100
       },
       "birthday": {
@@ -41,7 +41,7 @@
         "optional": true
       },
       "active": {
-        "type": "Boolean",
+        "type": "bool",
         "default": 0
       },
       "gender": {
