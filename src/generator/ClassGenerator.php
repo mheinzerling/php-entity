@@ -125,7 +125,6 @@ class ClassGenerator
             }
             $files[FileUtils::append($src, $name . ".php")] = ["content" => PhpSnippets::entity($name, $ns), 'overwrite' => false];
             $files[FileUtils::append($src, $name . "Repository.php")] = ["content" => PhpSnippets::repository($name, $ns), 'overwrite' => false];
-            $this->validate($properties, $entitiesRelations);
             $files[FileUtils::append($gensrc, "Base" . $name . "Repository.php")] = ["content" => PhpSnippets::baserepository($name, $properties, $entitiesRelations[$name]['fks']), 'overwrite' => true];
             $files[FileUtils::append($gensrc, "Base" . $name . ".php")] = ["content" => PhpSnippets::base($name, $properties, $entitiesRelations, $enums), 'overwrite' => true];
 
@@ -143,10 +142,4 @@ class ClassGenerator
         return $files;
     }
 
-    private function validate(array &$properties, array $entities)
-    {
-        //TODO
-//else throw new AnnotationException("Multiple autoincrement values in " . $this->entityClass);
-        return [];
-    }
 }

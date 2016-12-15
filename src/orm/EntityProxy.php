@@ -15,18 +15,22 @@ class EntityProxy extends Entity
     /**
      * @var string
      */
-    private $repo;
+    private $repoClass;
+
+    /**
+     * @var string
+     */
     private $pk;
 
-    public function __construct(string $repo, array $pk)
+    public function __construct(string $repoClass, array $pk)
     {
-        $this->repo = $repo;
+        $this->repoClass = $repoClass;
         $this->pk = $pk;
     }
 
     private function createRepo(): EntityRepository
     {
-        return new $this->repo();
+        return new $this->repoClass();
     }
 
     public function __call(string $functionName, array $parameters = null)

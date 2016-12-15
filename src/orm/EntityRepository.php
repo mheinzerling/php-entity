@@ -3,6 +3,7 @@
 namespace mheinzerling\entity\orm;
 
 
+use Eloquent\Enumeration\AbstractEnumeration;
 use mheinzerling\commons\database\ConnectionProvider;
 use mheinzerling\commons\database\DatabaseUtils;
 use mheinzerling\commons\StringUtils;
@@ -45,22 +46,22 @@ abstract class EntityRepository
     {
         $data = [];
         foreach ($this->meta->fields as $key => $field) {
-            $method = "get" . StringUtils::firstCharToUpper($key);
-            $data[$key] = $this->mapValue($key, $entity->$method());
+            $getter = "get" . StringUtils::firstCharToUpper($key);
+            $data[$key] = $this->mapValue($key, $entity->$getter());
             if ($data[$key] == null) {
                 $mandatory = !(isset($field['optional']) && $field['optional']);
                 $default = isset($field['default']);
                 if ($mandatory && $default) {
                     $data[$key] = $field['default'];
-                    $method = "set" . StringUtils::firstCharToUpper($key);
-                    $entity->$method($data[$key]);
+                    $setter = "set" . StringUtils::firstCharToUpper($key);
+                    $entity->$setter($data[$key]);
                 }
             }
         }
         if ($this->meta->autoincrement != null && $data[$this->meta->autoincrement] == null) {
             DatabaseUtils::insertAssoc($this->connection, $this->meta->table, $data);
-            $method = "set" . StringUtils::firstCharToUpper($this->meta->autoincrement);
-            $entity->$method($this->connection->lastInsertId());
+            $setter = "set" . StringUtils::firstCharToUpper($this->meta->autoincrement);
+            $entity->$setter($this->connection->lastInsertId());
         } else {
             DatabaseUtils::insertAssoc($this->connection, $this->meta->table, $data, DatabaseUtils::DUPLICATE_UPDATE);
         }
@@ -85,7 +86,7 @@ abstract class EntityRepository
                 if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk)); //TODO
                 $method = "get" . StringUtils::firstCharToUpper($pk[0]);
                 return $value->$method();
-            } elseif (is_subclass_of($value, '\Eloquent\Enumeration\AbstractEnumeration')) {
+            } elseif (is_subclass_of($value, AbstractEnumeration::class)) {
                 return $value->value();
             } elseif ($value instanceof \DateTime) {
                 return $value->format("Y-m-d H:i:s");
