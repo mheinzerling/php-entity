@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace mheinzerling\entity\bin;
 
@@ -22,8 +23,12 @@ class GenerateCommand extends Command
             ->addOption("force", "f", InputOption::VALUE_NONE, "Overwrite all existing files, also in the source directory");
     }
 
-    /** @noinspection PhpMissingParentCallCommonInspection */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /** @noinspection PhpMissingParentCallCommonInspection
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         $file = $input->getArgument('file');
         $force = $input->getOption('force');

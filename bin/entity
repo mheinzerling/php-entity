@@ -1,8 +1,10 @@
 #!/usr/bin/env php
 <?php
+declare(strict_types = 1);
 function includeIfExists($file):bool
 {
     if (file_exists($file)) {
+        /** @noinspection PhpIncludeInspection */
         return (include $file) !== false;
     }
     return false;

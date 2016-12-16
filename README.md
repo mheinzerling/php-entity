@@ -25,6 +25,9 @@ Simple ORM
 
 ##Changelog
 
+### 3.0.0
+- update to PHP 7.1
+
 ### 2.0.0
 - update to PHP 7
 - update enumeration library and symphony console

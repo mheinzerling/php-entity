@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace mheinzerling\entity\config;
 
@@ -16,7 +17,7 @@ class Property
      */
     private $name;
     /**
-     * @var Type
+     * @var PHPType
      */
     private $type;
     /**
@@ -36,7 +37,7 @@ class Property
      */
     private $autoIncrement;
     /**
-     * @var mixed
+     * @var string
      */
     private $default;
 
@@ -48,16 +49,16 @@ class Property
         $this->name = $name;
         $type = JsonUtils::required($json, 'type');
         try {
-            $this->type = new PrimitiveType(Primitive::memberByValue($type));
+            $this->type = new PrimitivePHPType(Primitive::memberByValue($type));
         } catch (UndefinedMemberException $e) {
-            if (StringUtils::contains($type, "\\")) $this->type = new ClassType($type);
-            else $this->type = new LazyEntityEnumType($type);
+            if (StringUtils::contains($type, "\\")) $this->type = new ClassPHPType($type);
+            else $this->type = new LazyEntityEnumPHPType($type);
         }
         $this->length = JsonUtils::optional($json, 'length', null);
         $this->primary = JsonUtils::optional($json, 'primary', false);
         $this->optional = JsonUtils::optional($json, 'optional', false);
         $this->autoIncrement = JsonUtils::optional($json, 'auto', false);
-        $this->default = JsonUtils::optional($json, 'default', null);
+        $this->default = (string)JsonUtils::optional($json, 'default', null);
     }
 
     /**
@@ -66,7 +67,7 @@ class Property
      */
     public function resolveLazyTypes($entities, $enums)
     {
-        if (!$this->type instanceof LazyEntityEnumType) return;
+        if (!$this->type instanceof LazyEntityEnumPHPType) return;
         $this->type = $this->type->toEntityEnum($entities, $enums);
     }
 
@@ -77,7 +78,7 @@ class Property
         $fieldBuilder->type($type);
         $fieldBuilder->primary($this->primary)->null($this->optional)->autoincrement($this->autoIncrement)->default($this->default);
         $fieldBuilder->complete();
-        if ($this->type instanceof EntityType) {
+        if ($this->type instanceof EntityPHPType) {
             //TODO multi field foreign key
             $entity = $this->type->getEntity();
             $tableBuilder->foreign([$this->name], $entity->getName(), array_keys($entity->getPrimaryKeyDatabaseTypes()), ReferenceOption::CASCADE(), ReferenceOption::RESTRICT()); //TODO
@@ -94,7 +95,7 @@ class Property
         return $this->name;
     }
 
-    public function getType(): Type
+    public function getType(): PHPType
     {
         return $this->type;
     }

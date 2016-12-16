@@ -10,7 +10,7 @@ use mheinzerling\test2\Gender;
 use mheinzerling\test2\User;
 use mheinzerling\test2\UserRepository;
 
-class CredentialsTest extends \PHPUnit_Framework_TestCase
+class CredentialTest extends \PHPUnit_Framework_TestCase
 {
     public function testPersistFetchEntityRef()
     {

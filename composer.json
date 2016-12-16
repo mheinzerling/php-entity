@@ -13,7 +13,7 @@
     "bin/entity"
   ],
   "require": {
-    "php": "^7.0.0",
+    "php": "^7.1.0",
     "symfony/console": "^3.1.0",
     "eloquent/enumeration": "^5.1.0",
     "mheinzerling/stringutils": "dev-master",
