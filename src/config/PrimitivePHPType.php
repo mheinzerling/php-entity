@@ -1,13 +1,15 @@
 <?php
+declare(strict_types = 1);
 
 namespace mheinzerling\entity\config;
 
 
 use mheinzerling\commons\database\structure\type\BoolType;
 use mheinzerling\commons\database\structure\type\IntType;
+use mheinzerling\commons\database\structure\type\Type;
 use mheinzerling\commons\database\structure\type\VarcharType;
 
-class PrimitiveType extends Type
+class PrimitivePHPType extends PHPType
 {
     /**
      * @var Primitive
@@ -20,7 +22,7 @@ class PrimitiveType extends Type
     }
 
 
-    public function toDatabaseType(int $length = null): \mheinzerling\commons\database\structure\type\Type
+    public function toDatabaseType(int $length = null): Type
     {
         switch ($this->type) {
             case Primitive::BOOL():

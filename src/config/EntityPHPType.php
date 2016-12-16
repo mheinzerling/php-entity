@@ -1,8 +1,11 @@
 <?php
+declare(strict_types = 1);
 namespace mheinzerling\entity\config;
 
 
-class EntityType extends Type
+use mheinzerling\commons\database\structure\type\Type;
+
+class EntityPHPType extends PHPType
 {
     /**
      * @var Entity
@@ -14,7 +17,7 @@ class EntityType extends Type
         $this->entity = $entity;
     }
 
-    public function toDatabaseType(int $length = null): \mheinzerling\commons\database\structure\type\Type
+    public function toDatabaseType(int $length = null): Type
     {
         $types = $this->entity->getPrimaryKeyDatabaseTypes();
         if (count($types) > 1) throw new \Exception("Unsupported multi field foreign key");
