@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace mheinzerling\entity\config;
+namespace mheinzerling\entity\generator;
 
 
 use mheinzerling\commons\database\structure\type\BoolType;
@@ -21,6 +21,20 @@ class PrimitivePHPType extends PHPType
         $this->type = $type;
     }
 
+    public function toPHPDoc(ClassWriter $classWriter): string
+    {
+        $doc = $this->type->value(); //TODO array of Object
+        if ($this->optional) $doc .= "|null";
+        return $doc;
+    }
+
+    public function toPHP(ClassWriter $classWriter): string
+    {
+        $type = '';
+        if ($this->optional) $type .= "?";
+        $type .= $this->type->value();
+        return $type;
+    }
 
     public function toDatabaseType(int $length = null): Type
     {
@@ -35,4 +49,18 @@ class PrimitivePHPType extends PHPType
                 throw new \Exception("Unhandled primitiv " . $this->type);
         }
     }
+
+    public function getterPrefix(): string
+    {
+        if ($this->type == Primitive::BOOL()) return "is";
+        return parent::getterPrefix();
+    }
+
+    public function toOptional(): PHPType
+    {
+        $type = new PrimitivePHPType($this->type);
+        $type->setOptional(true);
+        return $type;
+    }
+
 }

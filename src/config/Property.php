@@ -9,6 +9,12 @@ use mheinzerling\commons\database\structure\builder\TableBuilder;
 use mheinzerling\commons\database\structure\index\ReferenceOption;
 use mheinzerling\commons\JsonUtils;
 use mheinzerling\commons\StringUtils;
+use mheinzerling\entity\generator\AClass;
+use mheinzerling\entity\generator\ClassPHPType;
+use mheinzerling\entity\generator\MethodWriter;
+use mheinzerling\entity\generator\PHPType;
+use mheinzerling\entity\generator\Primitive;
+use mheinzerling\entity\generator\PrimitivePHPType;
 
 class Property
 {
@@ -51,12 +57,13 @@ class Property
         try {
             $this->type = new PrimitivePHPType(Primitive::memberByValue($type));
         } catch (UndefinedMemberException $e) {
-            if (StringUtils::contains($type, "\\")) $this->type = new ClassPHPType($type);
+            if (StringUtils::contains($type, "\\")) $this->type = new ClassPHPType(AClass::of($type));
             else $this->type = new LazyEntityEnumPHPType($type);
         }
         $this->length = JsonUtils::optional($json, 'length', null);
         $this->primary = JsonUtils::optional($json, 'primary', false);
         $this->optional = JsonUtils::optional($json, 'optional', false);
+        $this->type->setOptional($this->optional);
         $this->autoIncrement = JsonUtils::optional($json, 'auto', false);
         $this->default = (string)JsonUtils::optional($json, 'default', null);
     }
@@ -81,7 +88,7 @@ class Property
         if ($this->type instanceof EntityPHPType) {
             //TODO multi field foreign key
             $entity = $this->type->getEntity();
-            $tableBuilder->foreign([$this->name], $entity->getName(), array_keys($entity->getPrimaryKeyDatabaseTypes()), ReferenceOption::CASCADE(), ReferenceOption::RESTRICT()); //TODO
+            $tableBuilder->foreign([$this->name], $entity->getTableName(), array_keys($entity->getPrimaryKeyDatabaseTypes()), ReferenceOption::CASCADE(), ReferenceOption::RESTRICT()); //TODO
         }
     }
 
@@ -89,6 +96,12 @@ class Property
     {
         return $this->primary;
     }
+
+    public function isAutoIncrement(): bool
+    {
+        return $this->autoIncrement;
+    }
+
 
     public function getName(): string
     {
@@ -98,5 +111,10 @@ class Property
     public function getType(): PHPType
     {
         return $this->type;
+    }
+
+    public function fixInjection(MethodWriter $methodWriter): void
+    {
+        $this->type->fixInjection($this->name, $methodWriter);
     }
 }

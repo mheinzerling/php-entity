@@ -5,7 +5,17 @@ namespace mheinzerling\entity\config;
 
 
 use mheinzerling\commons\database\structure\builder\DatabaseBuilder;
+use mheinzerling\commons\database\structure\Database;
+use mheinzerling\commons\database\structure\index\ReferenceOption;
+use mheinzerling\commons\database\structure\SqlSetting;
+use mheinzerling\commons\database\structure\type\Type;
+use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
+use mheinzerling\entity\generator\AClass;
+use mheinzerling\entity\generator\ClassPHPType;
+use mheinzerling\entity\generator\ClassWriter;
+use mheinzerling\entity\generator\Primitive;
+use mheinzerling\entity\generator\PrimitivePHPType;
 
 class Config
 {
@@ -18,9 +28,9 @@ class Config
      */
     private $src;
     /**
-     * @var string
+     * @var AClass
      */
-    private $initializer;
+    private $modelClass;
 
     /**
      * @var Entity[]
@@ -33,13 +43,13 @@ class Config
     private $enums = [];
 
 
-    public function __construct(array $json)
+    private function __construct(array $json)
     {
-        JsonUtils::validProperties($json, ["gensrc", "src", "initializer", "entities", "enums"]);
+        JsonUtils::validProperties($json, ["gensrc", "src", "model", "entities", "enums"]);
         $this->gensrc = JsonUtils::required($json, 'gensrc');
         $this->src = JsonUtils::required($json, 'src');
-        $this->initializer = JsonUtils::required($json, 'initializer');
-        foreach (JsonUtils::optional($json, 'entities', []) as $name => $e) $this->entities[$name] = new Entity($name, $e);
+        $this->modelClass = AClass::of(JsonUtils::required($json, 'model'));
+        foreach (JsonUtils::optional($json, 'entities', []) as $name => $e) $this->entities[$name] = new Entity($name, $this->modelClass, $e);
         foreach (JsonUtils::optional($json, 'enums', []) as $name => $e) $this->enums[$name] = new Enum($name, $e);
 
         foreach ($this->entities as $entity) {
@@ -47,17 +57,103 @@ class Config
         }
     }
 
-    public static function load(string $file): Config
+    public static function loadFile(string $file): Config
     {
-        $json = JsonUtils::parseToArray(file_get_contents($file));
+        return self::loadJson(file_get_contents($file));
+    }
+
+    public static function loadJson(string $jsonString): Config
+    {
+        $json = JsonUtils::parseToArray($jsonString);
         return new Config($json);
     }
+
 
     public function addTo(DatabaseBuilder $databaseBuilder)
     {
         foreach ($this->entities as $entity) {
             $entity->addTo($databaseBuilder);
         }
+    }
+
+    /**
+     * @return Entity[]
+     */
+    public function getEntities(): array
+    {
+        return $this->entities;
+    }
+
+    /**
+     * @return Enum[]
+     */
+    public function getEnums(): array
+    {
+        return $this->enums;
+    }
+
+    public function toModelPHPFile(): string
+    {
+        //TODO 4 new properties
+        $classWriter = (new ClassWriter($this->modelClass->simple()))->namespace($this->modelClass->getNamespace());
+
+        $classWriter->use(AClass::of("\\" . DatabaseBuilder::class));
+        $classWriter->use(AClass::of("\\" . ReferenceOption::class));
+        $classWriter->use(AClass::of("\\" . Type::class));
+
+        $classWriter->field("database")->private()->static()->type(new ClassPHPType(AClass::of("\\" . Database::class)));
+        $methodWriter = $classWriter->method("getDatabase")->public()->static()->return(new ClassPHPType(AClass::of("\\" . Database::class)));
+        $dbBuilder = new DatabaseBuilder("");
+        $this->addTo($dbBuilder);
+        $builderCode = $dbBuilder->build()->toBuilderCode("InnoDB", "utf8mb4", "utf8mb4_unicode_ci");
+        $methodWriter->line("if (self::\$database == null) {");
+        $methodWriter->line("    self::\$database = " . str_replace("\n", "\n            ", $builderCode . ";"));
+        $methodWriter->line("}");
+        $methodWriter->line("return self::\$database;");
+
+
+        $classWriter->use(AClass::of("\\" . SqlSetting::class));
+        $methodWriter = $classWriter->method("initialize")->public()->static()->param("pdo", new ClassPHPType(AClass::of("\\" . \PDO::class)))->param("keepOtherTables", new PrimitivePHPType(Primitive::BOOL()), true)->void();
+        $methodWriter->line('$setting = new SqlSetting();');
+        $methodWriter->line('$pdo->beginTransaction();');
+        $methodWriter->line('if ($keepOtherTables) {');
+        $methodWriter->line('    foreach (self::getDatabase()->getTables() as $table) {');
+        $methodWriter->line('        $pdo->exec($table->toDropQuery($setting));');
+        $methodWriter->line('    }');
+        $methodWriter->line('} else {');
+        $methodWriter->line('    $pdo->exec(self::getDatabase()->toDropSql($setting));');
+        $methodWriter->line('    $pdo->exec(self::getDatabase()->toCreateSql($setting));');
+        $methodWriter->line('    $pdo->exec("USE `" . self::getDatabase()->getName() . "`");');
+        $methodWriter->line('}');
+        $methodWriter->line('foreach (self::getDatabase()->migrate(new Database(self::getDatabase()->getName()), $setting)->getStatements() as $statement) {');
+        $methodWriter->line('    $pdo->exec($statement);');
+        $methodWriter->line('}');
+        $methodWriter->line('$pdo->commit();');
+
+
+
+
+
+
+        return $methodWriter->write();
+    }
+
+
+    public function generateFiles(): array
+    {
+        $files = [];
+        //TODO PSR 0/4
+        foreach ($this->entities as $e) {
+            $files += $e->generateFiles($this->src, $this->gensrc);
+        }
+
+        foreach ($this->enums as $e) {
+            $files += $e->generateFiles($this->src);
+        }
+
+        $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $this->modelClass->getNamespace()->fullyQualified()), FileUtils::UNIX);
+        $files[FileUtils::append($gensrc, ucfirst($this->modelClass->simple()) . ".php")] = ["content" => $this->toModelPHPFile(), 'overwrite' => true];
+        return $files;
     }
 
 

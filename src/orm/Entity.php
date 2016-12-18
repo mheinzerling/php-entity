@@ -5,7 +5,12 @@ namespace mheinzerling\entity\orm;
 
 class Entity
 {
-    public function this():Entity
+    protected function __construct()
+    {
+
+    }
+
+    public function this(): Entity
     {
         return $this;
     }

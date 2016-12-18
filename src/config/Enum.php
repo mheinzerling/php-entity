@@ -4,12 +4,17 @@ declare(strict_types = 1);
 namespace mheinzerling\entity\config;
 
 
+use Eloquent\Enumeration\AbstractEnumeration;
+use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
+use mheinzerling\entity\generator\AClass;
+use mheinzerling\entity\generator\ANamespace;
+use mheinzerling\entity\generator\ClassWriter;
 
 class Enum
 {
     /**
-     * @var string
+     * @var ANamespace
      */
     private $namespace;
 
@@ -26,7 +31,7 @@ class Enum
     {
         $this->name = $name;
         JsonUtils::validProperties($json, ["namespace", "values"]);
-        $this->namespace = JsonUtils::required($json, 'namespace');
+        $this->namespace = ANamespace::absolute(JsonUtils::required($json, 'namespace'));
         foreach (JsonUtils::required($json, 'values') as $k => $v) $this->values[$k] = $v;
     }
 
@@ -37,4 +42,36 @@ class Enum
     {
         return $this->values;
     }
+
+    public function toPHPFile(): string
+    {
+        $writer = (new ClassWriter($this->name))->extends(AClass::of("\\" . AbstractEnumeration::class))
+            ->namespace($this->namespace)->final();
+        foreach ($this->values as $key => $value) {
+            $key = strtoupper($key);
+            $value = strtoupper($value);
+            $writer->doc("@method static $this->name $value()");
+            $writer->const($value, $key);
+        }
+        return $writer->write();
+    }
+
+    public function getFullyQualifiedName(): string
+    {
+        return $this->namespace->fullyQualified() . ANamespace::DELIMITER . $this->name;
+    }
+
+    public function getClass(): AClass
+    {
+        return $this->namespace->resolve($this->name);
+    }
+
+    public function generateFiles(string $src): array
+    {
+        $src = FileUtils::to(FileUtils::append($src, $this->namespace->fullyQualified()), FileUtils::UNIX);
+        $files[FileUtils::append($src, ucfirst($this->name) . ".php")] = ["content" => $this->toPHPFile(), 'overwrite' => false];
+        return $files;
+    }
+
+
 }

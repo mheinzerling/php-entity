@@ -5,6 +5,7 @@ namespace mheinzerling\entity\bin;
 
 
 use mheinzerling\commons\FileUtils;
+use mheinzerling\entity\config\Config;
 use mheinzerling\entity\generator\ClassGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,9 +27,9 @@ class GenerateCommand extends Command
     /** @noinspection PhpMissingParentCallCommonInspection
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|null|void
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = $input->getArgument('file');
         $force = $input->getOption('force');
@@ -37,8 +38,8 @@ class GenerateCommand extends Command
 
         $root = realpath(dirname($file));
         $output->writeln("Generating files to " . $root);
-        $generator = ClassGenerator::loadFromFile($file);
-        $files = $generator->generateFiles();
+        $config = Config::loadFile($file);
+        $files = $config->generateFiles();
         foreach ($files as $path => $file) {
 
 
@@ -50,6 +51,7 @@ class GenerateCommand extends Command
                 $output->writeln("[    SKIP] " . $path);
             }
         }
+        return 0;
     }
 
 

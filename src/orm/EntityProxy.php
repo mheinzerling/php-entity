@@ -6,6 +6,7 @@ namespace mheinzerling\entity\orm;
 
 
 use mheinzerling\commons\StringUtils;
+use mheinzerling\entity\generator\AClass;
 
 class EntityProxy extends Entity
 {
@@ -14,7 +15,7 @@ class EntityProxy extends Entity
      */
     private $entity;
     /**
-     * @var string
+     * @var AClass
      */
     private $repoClass;
 
@@ -23,7 +24,7 @@ class EntityProxy extends Entity
      */
     private $pk;
 
-    public function __construct(string $repoClass, array $pk)
+    public function __construct(AClass $repoClass, array $pk)
     {
         $this->repoClass = $repoClass;
         $this->pk = $pk;

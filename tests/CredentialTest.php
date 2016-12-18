@@ -9,17 +9,18 @@ use mheinzerling\test\CredentialRepository;
 use mheinzerling\test2\Gender;
 use mheinzerling\test2\User;
 use mheinzerling\test2\UserRepository;
+use mheinzerling\TestModel;
 
 class CredentialTest extends \PHPUnit_Framework_TestCase
 {
     public function testPersistFetchEntityRef()
     {
-        $pdo = new TestDatabaseConnection(false);
+        $pdo = new TestDatabaseConnection(true);
         ConnectionProvider::set($pdo);
+        TestModel::getDatabase()->setName($pdo->getDatabaseName());
+        TestModel::initialize($pdo, false);
         $users = new UserRepository();
-        $users->initialize();
         $credentials = new CredentialRepository();
-        $credentials->initialize();
 
         $pdo->clearLog();
         $user = new User();

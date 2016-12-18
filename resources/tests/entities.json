@@ -1,10 +1,10 @@
 {
   "gensrc": "gensrc",
   "src": "src",
-  "initializer": "mheinzerling",
+  "model": "\\mheinzerling\\TestModel",
   "entities": {
     "Credential": {
-      "namespace": "mheinzerling\\test",
+      "namespace": "\\mheinzerling\\test",
       "provider": {
         "type": "string",
         "length": 255,
@@ -21,7 +21,7 @@
       }
     },
     "User": {
-      "namespace": "mheinzerling\\test2",
+      "namespace": "\\mheinzerling\\test2",
       "unique": {
         "nick": [
           "nick"
@@ -52,7 +52,7 @@
   },
   "enums": {
     "Gender": {
-      "namespace": "mheinzerling\\test2",
+      "namespace": "\\mheinzerling\\test2",
       "values": {
         "m": "male",
         "f": "female"
