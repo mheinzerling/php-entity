@@ -3,15 +3,36 @@ declare(strict_types = 1);
 
 namespace mheinzerling\entity\orm;
 
-class Entity
+abstract class Entity
 {
+    protected $loaded = true;
+
     protected function __construct()
     {
 
     }
 
-    public function this(): Entity
+    protected function fetchFromDatabase()
     {
-        return $this;
+        /**
+         * @var $repo EntityRepository
+         */
+        $repo = (new \ReflectionClass(get_class($this) . "Repository"))->newInstance();
+        $entity = $repo->fetchByPk($this->getPk());
+        foreach (get_object_vars($entity) as $key => $value) {
+            $this->$key = $value;
+        }
     }
+
+    protected abstract function getPk(): array;
+
+    protected abstract function setPk(array $pk): void;
+
+    protected function load()
+    {
+        if ($this->loaded) return;
+        $this->fetchFromDatabase();
+        $this->loaded = true;
+    }
+
 }

@@ -41,4 +41,9 @@ abstract class PHPType
     {
         return 'get';
     }
+
+    public function toValue($value): string
+    {
+        return "'" . $value . "'";
+    }
 }

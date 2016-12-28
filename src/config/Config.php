@@ -131,10 +131,6 @@ class Config
         $methodWriter->line('$pdo->commit();');
 
 
-
-
-
-
         return $methodWriter->write();
     }
 

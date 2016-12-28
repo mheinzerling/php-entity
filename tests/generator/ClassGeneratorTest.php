@@ -23,16 +23,16 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
         $expected = [
             "src/mheinzerling/foo/bar/Abc.php",
             "src/mheinzerling/foo/bar/AbcRepository.php",
-            "gensrc/mheinzerling/foo/bar/BaseAbcRepository.php",
             "gensrc/mheinzerling/foo/bar/BaseAbc.php",
+            "gensrc/mheinzerling/foo/bar/BaseAbcRepository.php",
             "src/Mno.php",
             "src/MnoRepository.php",
-            "gensrc/BaseMnoRepository.php",
             "gensrc/BaseMno.php",
+            "gensrc/BaseMnoRepository.php",
             "src/mheinzerling/xyz/Xyz.php",
             "src/mheinzerling/xyz/XyzRepository.php",
-            "gensrc/mheinzerling/xyz/BaseXyzRepository.php",
             "gensrc/mheinzerling/xyz/BaseXyz.php",
+            "gensrc/mheinzerling/xyz/BaseXyzRepository.php",
             "src/mheinzerling/foo/Foo.php",
             "gensrc/mheinzerling/TestModel.php"];
 

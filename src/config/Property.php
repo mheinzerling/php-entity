@@ -117,4 +117,11 @@ class Property
     {
         $this->type->fixInjection($this->name, $methodWriter);
     }
+
+    public function getDefault(): string
+    {
+        return $this->default;
+    }
+
+
 }

@@ -6,7 +6,6 @@ namespace mheinzerling\entity\bin;
 
 use mheinzerling\commons\FileUtils;
 use mheinzerling\entity\config\Config;
-use mheinzerling\entity\generator\ClassGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

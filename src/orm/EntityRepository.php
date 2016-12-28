@@ -31,13 +31,6 @@ abstract class EntityRepository
         $this->table = strtolower($name);
     }
 
-
-    public function isInitialized(): bool
-    {
-        $query = "SHOW TABLES LIKE '" . $this->meta->table . "'";
-        return $this->connection->query($query)->rowCount() == 1;
-    }
-
     /**
      * @param Entity $entity
      * @return void
@@ -70,14 +63,7 @@ abstract class EntityRepository
         if (is_string($value) || is_numeric($value) || is_null($value)) return $value;
         if (is_bool($value)) return $value ? '1' : '0';
         if (is_object($value)) {
-
-            if (is_a($value, EntityProxy::class)) {
-                $prop = new \ReflectionProperty(EntityProxy::class, 'pk');
-                $prop->setAccessible(true);
-                $pk = $prop->getValue($value);
-                if (count($pk) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pk)); //TODO
-                return reset($pk);
-            } else if (is_subclass_of($value, Entity::class)) {
+            if (is_subclass_of($value, Entity::class)) {
                 /**
                  * @var $value Entity
                  * @var $repo EntityRepository
@@ -86,7 +72,7 @@ abstract class EntityRepository
                 $pks = $repo->getPrimaryKeyFields();
 
                 if (count($pks) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pks)); //TODO
-                return $this->get($value, reset($pks));
+                return $repo->get($value, reset($pks));
             } elseif (is_subclass_of($value, AbstractEnumeration::class)) {
                 /**
                  * @var $value AbstractEnumeration
@@ -123,18 +109,20 @@ abstract class EntityRepository
     /**
      * @param null|string $constraint
      * @param array|null $values
-     * @return bool|Entity[]
+     * @return Entity[]
      */
     public function fetchAll(string $constraint = null, array $values = null)
     {
         $stmt = $this->prepareStatement($constraint, $values);
-        return $stmt->fetchAll(\PDO::FETCH_CLASS, $this->meta->entityClass);
+        $all = $stmt->fetchAll(\PDO::FETCH_CLASS, $this->entityClass->fullyQualified());
+        if ($all === false) return [];
+        return $all;
     }
 
     /**
      * @param string|null $constraint
      * @param array|null $values
-     * @return ?Entity
+     * @return Entity|null
      */
     public function fetchUnique(string $constraint = null, array $values = null): ?Entity
     {
@@ -151,11 +139,13 @@ abstract class EntityRepository
      * @return bool|Entity
      * @throws \Exception
      */
-    public function fetchByPk($pk)
+    public function fetchByPk(array $pk)
     {
-        if (is_array($pk) || count($this->meta->pk) != 1) throw new \Exception("Unsupported operation");
-        $key = $this->meta->pk[0];
-        return $this->fetchUnique("WHERE `$key`=:$key", [$key => $pk]);
+        $primary = $this->database->getTables()[$this->table]->getPrimary();
+        if ($primary == null || count($primary->getFields()) != 1) throw new \Exception("Unsupported operation");
+        if (count($pk) != 1) throw new \Exception("Unsupported operation");
+        $key = array_keys($primary->getFields())[0];
+        return $this->fetchUnique("WHERE `$key`=:$key", [$key => array_values($pk)[0]]);
     }
 
     /**
@@ -173,7 +163,7 @@ abstract class EntityRepository
      */
     protected function set(Entity $entity, Field $field, $value): void
     {
-        $prop = new \ReflectionProperty(get_class($entity), $field->getName());
+        $prop = new \ReflectionProperty($this->entityBaseClass->fullyQualified(), $field->getName());
         $prop->setAccessible(true);
         $prop->setValue($entity, $value);
     }
@@ -185,7 +175,8 @@ abstract class EntityRepository
      */
     protected function get(Entity $entity, Field $field)
     {
-        $prop = new \ReflectionProperty(get_class($entity), $field->getName());
+
+        $prop = new \ReflectionProperty($this->entityBaseClass->fullyQualified(), $field->getName());
         $prop->setAccessible(true);
         return $prop->getValue($entity);
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b8d3153129f879009ee9cc625d6cbbc1",
+    "hash": "17124033cf76717e545d1b8f356ac87b",
     "content-hash": "731508d18973dc077c0567214811d9dc",
     "packages": [
         {
@@ -104,12 +104,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-databaseutils.git",
-                "reference": "69ed90f0bc4b3971e3dec8439cf7ef8309405de3"
+                "reference": "721db74c2ea1bbb14b0308c0df003ce4aac3e430"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/69ed90f0bc4b3971e3dec8439cf7ef8309405de3",
-                "reference": "69ed90f0bc4b3971e3dec8439cf7ef8309405de3",
+                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/721db74c2ea1bbb14b0308c0df003ce4aac3e430",
+                "reference": "721db74c2ea1bbb14b0308c0df003ce4aac3e430",
                 "shasum": ""
             },
             "require": {
@@ -139,7 +139,7 @@
                 }
             ],
             "description": "Some useful utilities for database access and modification",
-            "time": "2016-12-15 14:45:47"
+            "time": "2016-12-28 13:32:13"
         },
         {
             "name": "mheinzerling/fileutils",
@@ -188,12 +188,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-jsonutils.git",
-                "reference": "3e46863bd3866baca3f4ce336bcdebffbc6a6dbf"
+                "reference": "dea3bf52264034d2d7f84e7b43f13888f348f845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-jsonutils/zipball/3e46863bd3866baca3f4ce336bcdebffbc6a6dbf",
-                "reference": "3e46863bd3866baca3f4ce336bcdebffbc6a6dbf",
+                "url": "https://api.github.com/repos/mheinzerling/php-jsonutils/zipball/dea3bf52264034d2d7f84e7b43f13888f348f845",
+                "reference": "dea3bf52264034d2d7f84e7b43f13888f348f845",
                 "shasum": ""
             },
             "require": {
@@ -223,7 +223,7 @@
                 }
             ],
             "description": "JSON utilities",
-            "time": "2016-12-15 19:05:57"
+            "time": "2016-12-28 13:34:03"
         },
         {
             "name": "mheinzerling/stringutils",
@@ -1117,16 +1117,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "4.0.3",
+            "version": "4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "903fd6318d0a90b4770a009ff73e4a4e9c437929"
+                "reference": "c14196e64a78570034afd0b7a9f3757ba71c2a0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/903fd6318d0a90b4770a009ff73e4a4e9c437929",
-                "reference": "903fd6318d0a90b4770a009ff73e4a4e9c437929",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/c14196e64a78570034afd0b7a9f3757ba71c2a0a",
+                "reference": "c14196e64a78570034afd0b7a9f3757ba71c2a0a",
                 "shasum": ""
             },
             "require": {
@@ -1176,7 +1176,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-11-28 16:00:31"
+            "time": "2016-12-20 15:22:42"
         },
         {
             "name": "phpunit/php-file-iterator",

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace mheinzerling\entity\config;
 
 use mheinzerling\commons\database\structure\builder\DatabaseBuilder;
+use mheinzerling\commons\database\structure\Database;
 use mheinzerling\commons\database\structure\SqlSetting;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
@@ -21,7 +22,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $builder = new DatabaseBuilder("");
         $config->addTo($builder);
         $database = $builder->build();
-        $expected = "CREATE TABLE IF NOT EXISTS `user` (
+        $expected['500.0'] = str_replace("\r", "", "CREATE TABLE IF NOT EXISTS `user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nick` VARCHAR(100) NOT NULL,
   `birthday` DATETIME DEFAULT NULL,
@@ -29,9 +30,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
   `gender` ENUM('m', 'f') DEFAULT NULL,
   UNIQUE KEY `uni_user_nick` (`nick`),
   PRIMARY KEY (`id`)
-  );
-
-CREATE TABLE IF NOT EXISTS `credential` (
+  );");
+        $expected['500.1'] = str_replace("\r", "", "CREATE TABLE IF NOT EXISTS `credential` (
   `provider` VARCHAR(255) NOT NULL,
   `uid` VARCHAR(255) NOT NULL,
   `user` INT DEFAULT NULL,
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS `credential` (
   CONSTRAINT `fk_credential_user__user_id` FOREIGN KEY (`user`) REFERENCES `user` (`id`)
     ON UPDATE CASCADE
     ON DELETE RESTRICT
-  );";
-        static::assertEquals(str_replace("\r", "", $expected), $database->toCreateSql(new SqlSetting()));
+  );");
+        static::assertEquals($expected, $database->migrate(new Database(""), new SqlSetting())->getStatements());
 
     }
 

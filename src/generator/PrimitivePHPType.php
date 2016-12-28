@@ -63,4 +63,25 @@ class PrimitivePHPType extends PHPType
         return $type;
     }
 
+    public function fixInjection(string $fieldName, MethodWriter $methodWriter): void
+    {
+        parent::fixInjection($fieldName, $methodWriter);
+        if ($this->type == Primitive::INT()) {
+            $methodWriter->line("\$this->$fieldName = intval(\$this->$fieldName);");
+        } else if ($this->type == Primitive::BOOL()) {
+            $methodWriter->line("\$this->$fieldName = \$this->$fieldName !== FALSE && \$this->$fieldName !== '0';");
+        }
+    }
+
+    public function toValue($value): string
+    {
+        if ($this->type == Primitive::INT()) {
+            return $value;
+        } else if ($this->type == Primitive::BOOL()) {
+            if (empty($value)) return "false";
+            else return "true";
+        } else return parent::toValue($value);
+    }
+
+
 }

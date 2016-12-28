@@ -4,10 +4,8 @@ namespace mheinzerling\entity\config;
 
 
 use mheinzerling\commons\database\structure\type\Type;
-use mheinzerling\entity\generator\AClass;
 use mheinzerling\entity\generator\ClassPHPType;
 use mheinzerling\entity\generator\MethodWriter;
-use mheinzerling\entity\orm\EntityProxy;
 
 class EntityPHPType extends ClassPHPType
 {
@@ -55,14 +53,9 @@ class EntityPHPType extends ClassPHPType
 
         $entity = $this->entity->getClass()->write($methodWriter->getClassWriter());
         $methodWriter->line("if (!\$this->$fieldName instanceof " . $entity . " && \$this->$fieldName != null) {");
-
-
-        $repository = $this->entity->getRepositoryClass()->write($methodWriter->getClassWriter());
-        $proxy = AClass::of("\\" . EntityProxy::class)->write($methodWriter->getClassWriter());
-
-
-        $aclass = AClass::of("\\" . AClass::class)->write($methodWriter->getClassWriter());
-        $methodWriter->line("    \$this->$fieldName = new $proxy(" . $aclass . "::of(\"\\\\\" . $repository::class), ['$primary' => \$this->$fieldName]);");
+        $methodWriter->line("    \$pk = ['$primary' => intval(\$this->$fieldName)];");
+        $methodWriter->line("    \$this->$fieldName = new $entity();");
+        $methodWriter->line("    \$this->" . $fieldName . "->setPk(\$pk);");
         $methodWriter->line("}");
     }
 

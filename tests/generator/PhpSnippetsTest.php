@@ -67,13 +67,13 @@ use mheinzerling\\TestModel;
 use mheinzerling\\entity\\generator\\ANamespace;
 use mheinzerling\\entity\\orm\\EntityRepository;
 
-class BaseCredentialRepository extends EntityRepository
+abstract class BaseCredentialRepository extends EntityRepository
 {
     public function __construct(\\PDO \$connection = null)
     {
         parent::__construct(
             \$connection,
-            ANamespace::of('\\mheinzerling\\test'),
+            ANamespace::absolute('\\mheinzerling\\test'),
             'Credential',
             TestModel::getDatabase()
         );
@@ -81,6 +81,7 @@ class BaseCredentialRepository extends EntityRepository
 
     public function fetchByProviderAndUid(string \$provider, string \$uid): ?Credential
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return \$this->fetchUnique(\"WHERE `provider`=:provider AND `uid`=:uid\", ['provider'=>\$provider, 'uid'=>\$uid]);
     }
 }";
@@ -102,13 +103,13 @@ use mheinzerling\\TestModel;
 use mheinzerling\\entity\\generator\\ANamespace;
 use mheinzerling\\entity\\orm\\EntityRepository;
 
-class BaseUserRepository extends EntityRepository
+abstract class BaseUserRepository extends EntityRepository
 {
     public function __construct(\\PDO \$connection = null)
     {
         parent::__construct(
             \$connection,
-            ANamespace::of('\\mheinzerling\\test2'),
+            ANamespace::absolute('\\mheinzerling\\test2'),
             'User',
             TestModel::getDatabase()
         );
@@ -116,6 +117,7 @@ class BaseUserRepository extends EntityRepository
 
     public function fetchById(int \$id): ?User
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return \$this->fetchUnique(\"WHERE `id`=:id\", ['id'=>\$id]);
     }
 }";
@@ -133,9 +135,7 @@ declare(strict_types = 1);
 namespace mheinzerling\test;
 
 use mheinzerling\entity\orm\Entity;
-use mheinzerling\entity\orm\EntityProxy;
 use mheinzerling\test2\User;
-use mheinzerling\test2\UserRepository;
 
 abstract class BaseCredential extends Entity
 {
@@ -158,8 +158,25 @@ abstract class BaseCredential extends Entity
     {
         parent::__construct();
         if (!$this->user instanceof User && $this->user != null) {
-            $this->user = new EntityProxy(\'UserRepository\', array(\'id\' => $this->user));
+            $pk = [\'id\' => intval($this->user)];
+            $this->user = new User();
+            $this->user->setPk($pk);
         }
+    }
+
+    public function getPk(): array
+    {
+        return [
+            \'provider\' => $this->provider,
+            \'uid\' => $this->uid
+        ];
+    }
+
+    public function setPk(array $pk): void
+    {
+        $this->provider = $pk[\'provider\'];
+        $this->uid = $pk[\'uid\'];
+        $this->loaded = false;
     }
 
     public function setProvider(string $provider): void
@@ -189,6 +206,7 @@ abstract class BaseCredential extends Entity
 
     public function getUser(): ?User
     {
+        $this->load();
         return $this->user;
     }
 }';
@@ -226,7 +244,7 @@ abstract class BaseUser extends Entity
     /**
      * @var bool
      */
-    protected $active;
+    protected $active = false;
 
     /**
      * @var Gender|null
@@ -236,20 +254,30 @@ abstract class BaseUser extends Entity
     public function __construct()
     {
         parent::__construct();
+        $this->id = intval($this->id);
         if (!$this->birthday instanceof \DateTime && $this->birthday != null) {
             $this->birthday = new \DateTime($this->birthday);
         }
+        $this->active = $this->active !== FALSE && $this->active !== \'0\';
         if (!$this->gender instanceof Gender && $this->gender != null) {
             $this->gender = Gender::memberByValue(strtoupper($this->gender));
         }
     }
 
-    public function setId(int $id): void
+    public function getPk(): array
     {
-        $this->id = $id;
+        return [
+            \'id\' => $this->id
+        ];
     }
 
-    public function getId(): int
+    public function setPk(array $pk): void
+    {
+        $this->id = $pk[\'id\'];
+        $this->loaded = false;
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -261,6 +289,7 @@ abstract class BaseUser extends Entity
 
     public function getNick(): string
     {
+        $this->load();
         return $this->nick;
     }
 
@@ -271,6 +300,7 @@ abstract class BaseUser extends Entity
 
     public function getBirthday(): ?\DateTime
     {
+        $this->load();
         return $this->birthday;
     }
 
@@ -281,6 +311,7 @@ abstract class BaseUser extends Entity
 
     public function isActive(): bool
     {
+        $this->load();
         return $this->active;
     }
 
@@ -291,6 +322,7 @@ abstract class BaseUser extends Entity
 
     public function getGender(): ?Gender
     {
+        $this->load();
         return $this->gender;
     }
 }';
@@ -308,6 +340,7 @@ declare(strict_types = 1);
 namespace mheinzerling;
 
 use mheinzerling\commons\database\structure\Database;
+use mheinzerling\commons\database\structure\SqlSetting;
 use mheinzerling\commons\database\structure\builder\DatabaseBuilder;
 use mheinzerling\commons\database\structure\index\ReferenceOption;
 use mheinzerling\commons\database\structure\type\Type;
@@ -336,6 +369,25 @@ class TestModel
                 ->build();
         }
         return self::$database;
+    }
+
+    public static function initialize(\PDO $pdo, bool $keepOtherTables): void
+    {
+        $setting = new SqlSetting();
+        $pdo->beginTransaction();
+        if ($keepOtherTables) {
+            foreach (self::getDatabase()->getTables() as $table) {
+                $pdo->exec($table->toDropQuery($setting));
+            }
+        } else {
+            $pdo->exec(self::getDatabase()->toDropSql($setting));
+            $pdo->exec(self::getDatabase()->toCreateSql($setting));
+            $pdo->exec("USE `" . self::getDatabase()->getName() . "`");
+        }
+        foreach (self::getDatabase()->migrate(new Database(self::getDatabase()->getName()), $setting)->getStatements() as $statement) {
+            $pdo->exec($statement);
+        }
+        $pdo->commit();
     }
 }';
         $this->assertEqualsIgnoreLineEnding($expected, $actual);

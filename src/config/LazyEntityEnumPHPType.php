@@ -50,7 +50,7 @@ class LazyEntityEnumPHPType extends PHPType
         throw new \Exception("Unsupported operation");
     }
 
-    public  function toOptional(): PHPType
+    public function toOptional(): PHPType
     {
         throw new \Exception("Unsupported operation");
     }

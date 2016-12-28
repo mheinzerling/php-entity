@@ -12,6 +12,8 @@ use mheinzerling\entity\generator\AClass;
 use mheinzerling\entity\generator\ANamespace;
 use mheinzerling\entity\generator\ClassPHPType;
 use mheinzerling\entity\generator\ClassWriter;
+use mheinzerling\entity\generator\Primitive;
+use mheinzerling\entity\generator\PrimitivePHPType;
 use mheinzerling\entity\orm\EntityRepository;
 
 class Entity
@@ -139,13 +141,28 @@ class Entity
         $classWriter = (new ClassWriter("Base" . $this->name))->namespace($this->namespace)->abstract()->extends(AClass::of("\\" . \mheinzerling\entity\orm\Entity::class));
 
         foreach ($this->properties as $field => $property) {
-            $classWriter->field($field)->protected()->type($property->getType());
+            $classWriter->field($field)->protected()->type($property->getType())->initial($property->getDefault()); //for injection
         }
         $methodWriter = $classWriter->method("__construct")->public();
         $methodWriter->line("parent::__construct();");
         foreach ($this->properties as $field => $property) {
             $property->fixInjection($methodWriter);
         }
+
+        $methodWriter = $classWriter->method("getPk")->public()->return(new PrimitivePHPType(Primitive::ARRAY()));
+        $methodWriter->line("return [");
+        $primaries = array_keys($this->getPrimaryKeyProperties());
+        for ($c = 0, $s = count($primaries); $c < $s; $c++) {
+            $field = $primaries[$c];
+            $methodWriter->line("    '$field' => \$this->$field" . ($c < $s - 1 ? "," : ""));
+        }
+        $methodWriter->line("];");
+
+        $methodWriter = $classWriter->method("setPk")->public()->void()->param("pk", new PrimitivePHPType(Primitive::ARRAY()));
+        foreach ($primaries as $field) {
+            $methodWriter->line("\$this->$field = \$pk['$field'];");
+        }
+        $methodWriter->line("\$this->loaded = false;");
 
 
         foreach ($this->properties as $field => $property) {
@@ -156,7 +173,9 @@ class Entity
 
             $type = $property->getType();
             if ($property->isAutoIncrement()) $type = $type->toOptional();
-            $classWriter->method($getOrIs . $uField)->public()->return($type)->line("return \$this->$field;");
+            $getterWriter = $classWriter->method($getOrIs . $uField)->public()->return($type);
+            if (!$property->isPrimary()) $getterWriter->line("\$this->load();");
+            $getterWriter->line("return \$this->$field;");
         }
         return $classWriter->write();
     }

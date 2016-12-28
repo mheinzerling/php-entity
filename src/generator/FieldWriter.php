@@ -27,6 +27,10 @@ class FieldWriter
      * @var bool
      */
     private $static;
+    /**
+     * @var mixed
+     */
+    private $initial = null;
 
     public function __construct(ClassWriter $classWriter, string $name)
     {
@@ -41,7 +45,9 @@ class FieldWriter
         $result .= "     */\n";
         $result .= "    " . $this->visibility;
         if ($this->static) $result .= " static";
-        $result .= " $" . $this->name . ";\n";
+        $result .= " $" . $this->name;
+        if ($this->initial != null) $result .= " = " . $this->type->toValue($this->initial);
+        $result .= ";\n";
         return $result;
     }
 
@@ -73,5 +79,10 @@ class FieldWriter
     {
         $this->type = $type;
         return $this;
+    }
+
+    public function initial($initial): void
+    {
+        $this->initial = $initial;
     }
 }
