@@ -9,12 +9,13 @@ use mheinzerling\commons\database\structure\builder\TableBuilder;
 use mheinzerling\commons\database\structure\index\ReferenceOption;
 use mheinzerling\commons\JsonUtils;
 use mheinzerling\commons\StringUtils;
-use mheinzerling\entity\generator\AClass;
-use mheinzerling\entity\generator\ClassPHPType;
-use mheinzerling\entity\generator\MethodWriter;
-use mheinzerling\entity\generator\PHPType;
-use mheinzerling\entity\generator\Primitive;
-use mheinzerling\entity\generator\PrimitivePHPType;
+use mheinzerling\entity\DatabaseTypeConverter;
+use mheinzerling\meta\language\AClass;
+use mheinzerling\meta\language\ClassPHPType;
+use mheinzerling\meta\language\PHPType;
+use mheinzerling\meta\language\Primitive;
+use mheinzerling\meta\language\PrimitivePHPType;
+use mheinzerling\meta\writer\MethodWriter;
 
 class Property
 {
@@ -57,7 +58,7 @@ class Property
         try {
             $this->type = new PrimitivePHPType(Primitive::memberByValue($type));
         } catch (UndefinedMemberException $e) {
-            if (StringUtils::contains($type, "\\")) $this->type = new ClassPHPType(AClass::of($type));
+            if (StringUtils::contains($type, "\\")) $this->type = new ClassPHPType(AClass::absolute($type));
             else $this->type = new LazyEntityEnumPHPType($type);
         }
         $this->length = JsonUtils::optional($json, 'length', null);
@@ -80,7 +81,7 @@ class Property
 
     public function addTo(TableBuilder $tableBuilder)
     {
-        $type = $this->type->toDatabaseType($this->length);//TODO collation
+        $type = DatabaseTypeConverter::toDatabaseType($this->type, $this->length);//TODO collation
         $fieldBuilder = $tableBuilder->field($this->name);
         $fieldBuilder->type($type);
         $fieldBuilder->primary($this->primary)->null($this->optional)->autoincrement($this->autoIncrement)->default($this->default);
@@ -102,7 +103,6 @@ class Property
         return $this->autoIncrement;
     }
 
-
     public function getName(): string
     {
         return $this->name;
@@ -113,15 +113,18 @@ class Property
         return $this->type;
     }
 
+    public function getLength():?int
+    {
+        return $this->length;
+    }
+
     public function fixInjection(MethodWriter $methodWriter): void
     {
-        $this->type->fixInjection($this->name, $methodWriter);
+        InjectionConverter::fixInjection($this->type, $this->name, $methodWriter);
     }
 
     public function getDefault(): string
     {
         return $this->default;
     }
-
-
 }

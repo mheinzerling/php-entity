@@ -9,7 +9,7 @@ use mheinzerling\commons\database\ConnectionProvider;
 use mheinzerling\commons\database\DatabaseUtils;
 use mheinzerling\commons\database\structure\Database;
 use mheinzerling\commons\database\structure\Field;
-use mheinzerling\entity\generator\ANamespace;
+use mheinzerling\meta\language\ANamespace;
 
 abstract class EntityRepository
 {

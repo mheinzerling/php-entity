@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "17124033cf76717e545d1b8f356ac87b",
-    "content-hash": "731508d18973dc077c0567214811d9dc",
+    "hash": "2a20013f63039acc78ec1a689d27a5f5",
+    "content-hash": "fe7e1963d01790e8b1f391d2c7159f8b",
     "packages": [
         {
             "name": "eloquent/enumeration",
@@ -224,6 +224,49 @@
             ],
             "description": "JSON utilities",
             "time": "2016-12-28 13:34:03"
+        },
+        {
+            "name": "mheinzerling/meta",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mheinzerling/php-meta.git",
+                "reference": "dee12231aeee788d29aef2a409d852bd061195c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mheinzerling/php-meta/zipball/dee12231aeee788d29aef2a409d852bd061195c4",
+                "reference": "dee12231aeee788d29aef2a409d852bd061195c4",
+                "shasum": ""
+            },
+            "require": {
+                "eloquent/enumeration": "^5.1.0",
+                "mheinzerling/fileutils": "dev-master",
+                "mheinzerling/stringutils": "dev-master",
+                "php": "^7.1.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "phpunit/phpunit": "^5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mheinzerling\\meta\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Heinzerling",
+                    "email": "webmaster@mheinzerling.de"
+                }
+            ],
+            "description": "Handle PHP language constructs (Class/Namespace) and generate PHP files.",
+            "time": "2016-12-29 16:39:06"
         },
         {
             "name": "mheinzerling/stringutils",
@@ -1361,16 +1404,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.4",
+            "version": "5.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "af91da3f2671006ff5d0628023de3b7ac4d1ef09"
+                "reference": "50fd2be8f3e23e91da825f36f08e5f9633076ffe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/af91da3f2671006ff5d0628023de3b7ac4d1ef09",
-                "reference": "af91da3f2671006ff5d0628023de3b7ac4d1ef09",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/50fd2be8f3e23e91da825f36f08e5f9633076ffe",
+                "reference": "50fd2be8f3e23e91da825f36f08e5f9633076ffe",
                 "shasum": ""
             },
             "require": {
@@ -1439,7 +1482,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-12-13 16:19:44"
+            "time": "2016-12-28 07:18:51"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2399,6 +2442,7 @@
         "mheinzerling/databaseutils": 20,
         "mheinzerling/arrayutils": 20,
         "mheinzerling/jsonutils": 20,
+        "mheinzerling/meta": 20,
         "codeclimate/php-test-reporter": 20
     },
     "prefer-stable": false,

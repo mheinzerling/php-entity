@@ -7,6 +7,7 @@ namespace mheinzerling\entity\generator;
 use mheinzerling\entity\config\Config;
 use mheinzerling\entity\config\Entity;
 use mheinzerling\entity\config\Enum;
+use mheinzerling\meta\language\AClass;
 
 class PhpSnippetsTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +15,7 @@ class PhpSnippetsTest extends \PHPUnit_Framework_TestCase
     public function testRepository()
     {
 
-        $actual = (new Entity("Foo", AClass::of("\\foo\\Model"), ['namespace' => '\foo\foo']))->toRepositoryPHPFile();;
+        $actual = (new Entity("Foo", AClass::absolute("\\foo\\Model"), ['namespace' => '\foo\foo']))->toRepositoryPHPFile();;
         $expected = '<?php
 declare(strict_types = 1);
 
@@ -28,7 +29,7 @@ class FooRepository extends BaseFooRepository
 
     public function testRepositoryWithoutNamespace()
     {
-        $actual = (new Entity("Foo", AClass::of("\\Model"), ['namespace' => '\\']))->toRepositoryPHPFile();;
+        $actual = (new Entity("Foo", AClass::absolute("\\Model"), ['namespace' => '\\']))->toRepositoryPHPFile();;
         $expected = '<?php
 declare(strict_types = 1);
 
@@ -40,7 +41,7 @@ class FooRepository extends BaseFooRepository
 
     public function testEntity()
     {
-        $actual = (new Entity("Foo", AClass::of("\\foo\\Model"), ['namespace' => '\foo\foo']))->toEntityPHPFile();
+        $actual = (new Entity("Foo", AClass::absolute("\\foo\\Model"), ['namespace' => '\foo\foo']))->toEntityPHPFile();
         $expected = '<?php
 declare(strict_types = 1);
 
@@ -64,8 +65,8 @@ declare(strict_types = 1);
 namespace mheinzerling\\test;
 
 use mheinzerling\\TestModel;
-use mheinzerling\\entity\\generator\\ANamespace;
 use mheinzerling\\entity\\orm\\EntityRepository;
+use mheinzerling\\meta\\language\\ANamespace;
 
 abstract class BaseCredentialRepository extends EntityRepository
 {
@@ -100,8 +101,8 @@ declare(strict_types = 1);
 namespace mheinzerling\\test2;
 
 use mheinzerling\\TestModel;
-use mheinzerling\\entity\\generator\\ANamespace;
 use mheinzerling\\entity\\orm\\EntityRepository;
+use mheinzerling\\meta\\language\\ANamespace;
 
 abstract class BaseUserRepository extends EntityRepository
 {

@@ -11,11 +11,9 @@ use mheinzerling\commons\database\structure\SqlSetting;
 use mheinzerling\commons\database\structure\type\Type;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
-use mheinzerling\entity\generator\AClass;
-use mheinzerling\entity\generator\ClassPHPType;
-use mheinzerling\entity\generator\ClassWriter;
-use mheinzerling\entity\generator\Primitive;
-use mheinzerling\entity\generator\PrimitivePHPType;
+use mheinzerling\meta\language\AClass;
+use mheinzerling\meta\language\Primitive;
+use mheinzerling\meta\writer\ClassWriter;
 
 class Config
 {
@@ -48,7 +46,7 @@ class Config
         JsonUtils::validProperties($json, ["gensrc", "src", "model", "entities", "enums"]);
         $this->gensrc = JsonUtils::required($json, 'gensrc');
         $this->src = JsonUtils::required($json, 'src');
-        $this->modelClass = AClass::of(JsonUtils::required($json, 'model'));
+        $this->modelClass = AClass::absolute(JsonUtils::required($json, 'model'));
         foreach (JsonUtils::optional($json, 'entities', []) as $name => $e) $this->entities[$name] = new Entity($name, $this->modelClass, $e);
         foreach (JsonUtils::optional($json, 'enums', []) as $name => $e) $this->enums[$name] = new Enum($name, $e);
 
@@ -97,12 +95,12 @@ class Config
         //TODO 4 new properties
         $classWriter = (new ClassWriter($this->modelClass->simple()))->namespace($this->modelClass->getNamespace());
 
-        $classWriter->use(AClass::of("\\" . DatabaseBuilder::class));
-        $classWriter->use(AClass::of("\\" . ReferenceOption::class));
-        $classWriter->use(AClass::of("\\" . Type::class));
+        $classWriter->use(AClass::absolute(DatabaseBuilder::class));
+        $classWriter->use(AClass::absolute(ReferenceOption::class));
+        $classWriter->use(AClass::absolute(Type::class));
 
-        $classWriter->field("database")->private()->static()->type(new ClassPHPType(AClass::of("\\" . Database::class)));
-        $methodWriter = $classWriter->method("getDatabase")->public()->static()->return(new ClassPHPType(AClass::of("\\" . Database::class)));
+        $classWriter->field("database")->private()->static()->class(AClass::absolute(Database::class));
+        $methodWriter = $classWriter->method("getDatabase")->public()->static()->returnClass(AClass::absolute(Database::class));
         $dbBuilder = new DatabaseBuilder("");
         $this->addTo($dbBuilder);
         $builderCode = $dbBuilder->build()->toBuilderCode("InnoDB", "utf8mb4", "utf8mb4_unicode_ci");
@@ -112,8 +110,11 @@ class Config
         $methodWriter->line("return self::\$database;");
 
 
-        $classWriter->use(AClass::of("\\" . SqlSetting::class));
-        $methodWriter = $classWriter->method("initialize")->public()->static()->param("pdo", new ClassPHPType(AClass::of("\\" . \PDO::class)))->param("keepOtherTables", new PrimitivePHPType(Primitive::BOOL()), true)->void();
+        $classWriter->use(AClass::absolute(SqlSetting::class));
+        $methodWriter = $classWriter->method("initialize")->public()->static()
+            ->paramClass("pdo", AClass::absolute(\PDO::class))
+            ->paramPrimitive("keepOtherTables", Primitive::BOOL(), true)
+            ->void();
         $methodWriter->line('$setting = new SqlSetting();');
         $methodWriter->line('$pdo->beginTransaction();');
         $methodWriter->line('if ($keepOtherTables) {');
@@ -129,8 +130,6 @@ class Config
         $methodWriter->line('    $pdo->exec($statement);');
         $methodWriter->line('}');
         $methodWriter->line('$pdo->commit();');
-
-
         return $methodWriter->write();
     }
 

@@ -7,9 +7,9 @@ namespace mheinzerling\entity\config;
 use Eloquent\Enumeration\AbstractEnumeration;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
-use mheinzerling\entity\generator\AClass;
-use mheinzerling\entity\generator\ANamespace;
-use mheinzerling\entity\generator\ClassWriter;
+use mheinzerling\meta\language\AClass;
+use mheinzerling\meta\language\ANamespace;
+use mheinzerling\meta\writer\ClassWriter;
 
 class Enum
 {
@@ -45,7 +45,7 @@ class Enum
 
     public function toPHPFile(): string
     {
-        $writer = (new ClassWriter($this->name))->extends(AClass::of("\\" . AbstractEnumeration::class))
+        $writer = (new ClassWriter($this->name))->extends(AClass::absolute(AbstractEnumeration::class))
             ->namespace($this->namespace)->final();
         foreach ($this->values as $key => $value) {
             $key = strtoupper($key);
@@ -72,6 +72,7 @@ class Enum
         $files[FileUtils::append($src, ucfirst($this->name) . ".php")] = ["content" => $this->toPHPFile(), 'overwrite' => false];
         return $files;
     }
+
 
 
 }

@@ -3,10 +3,7 @@ declare(strict_types = 1);
 namespace mheinzerling\entity\config;
 
 
-use mheinzerling\commons\database\structure\type\EnumType;
-use mheinzerling\commons\database\structure\type\Type;
-use mheinzerling\entity\generator\ClassPHPType;
-use mheinzerling\entity\generator\MethodWriter;
+use mheinzerling\meta\language\ClassPHPType;
 
 class EnumPHPType extends ClassPHPType
 {
@@ -21,22 +18,11 @@ class EnumPHPType extends ClassPHPType
         $this->enum = $enum;
     }
 
-    /** @noinspection PhpMissingParentCallCommonInspection
-     * @param int $length
-     * @return Type
+    /**
+     * @return string[]
      */
-    public function toDatabaseType(int $length = null): Type
+    public function getValues(): array
     {
-        return new EnumType(array_keys($this->enum->getValues()));
+        return array_keys($this->enum->getValues());
     }
-
-    public function fixInjection(string $fieldName, MethodWriter $methodWriter): void
-    {
-        parent::fixInjection($fieldName, $methodWriter);
-        $enum = $this->enum->getClass()->write($methodWriter->getClassWriter());
-        $methodWriter->line("if (!\$this->$fieldName instanceof " . $enum . " && \$this->$fieldName != null) {");
-        $methodWriter->line("    \$this->$fieldName = " . $enum . "::memberByValue(strtoupper(\$this->$fieldName));");
-        $methodWriter->line("}");
-    }
-
 }

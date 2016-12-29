@@ -5,16 +5,17 @@ namespace mheinzerling\entity\config;
 
 
 use mheinzerling\commons\database\structure\builder\DatabaseBuilder;
+use mheinzerling\commons\database\structure\type\Type;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
 use mheinzerling\commons\StringUtils;
-use mheinzerling\entity\generator\AClass;
-use mheinzerling\entity\generator\ANamespace;
-use mheinzerling\entity\generator\ClassPHPType;
-use mheinzerling\entity\generator\ClassWriter;
-use mheinzerling\entity\generator\Primitive;
-use mheinzerling\entity\generator\PrimitivePHPType;
+use mheinzerling\entity\DatabaseTypeConverter;
 use mheinzerling\entity\orm\EntityRepository;
+use mheinzerling\meta\language\AClass;
+use mheinzerling\meta\language\ANamespace;
+use mheinzerling\meta\language\Primitive;
+use mheinzerling\meta\writer\ClassWriter;
+use mheinzerling\meta\writer\TypeConverter;
 
 class Entity
 {
@@ -108,18 +109,18 @@ class Entity
 
     }
 
-    public function getPrimaryKeyDatabaseTypes()
+    /**
+     * @return Type[]
+     */
+    public function getPrimaryKeyDatabaseTypes(): array
     {
         $types = [];
         foreach ($this->getPrimaryKeyProperties() as $property) {
-            $types[$property->getName()] = $property->getType()->toDatabaseType(null);
+            $types[$property->getName()] = DatabaseTypeConverter::toDatabaseType($property->getType(), $property->getLength());
         }
         return $types;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
@@ -138,7 +139,8 @@ class Entity
 
     public function toEntityBasePHPFile(): string
     {
-        $classWriter = (new ClassWriter("Base" . $this->name))->namespace($this->namespace)->abstract()->extends(AClass::of("\\" . \mheinzerling\entity\orm\Entity::class));
+        $classWriter = (new ClassWriter("Base" . $this->name))->namespace($this->namespace)->abstract()
+            ->extends(AClass::absolute(\mheinzerling\entity\orm\Entity::class));
 
         foreach ($this->properties as $field => $property) {
             $classWriter->field($field)->protected()->type($property->getType())->initial($property->getDefault()); //for injection
@@ -149,7 +151,7 @@ class Entity
             $property->fixInjection($methodWriter);
         }
 
-        $methodWriter = $classWriter->method("getPk")->public()->return(new PrimitivePHPType(Primitive::ARRAY()));
+        $methodWriter = $classWriter->method("getPk")->public()->returnPrimitive(Primitive::ARRAY());
         $methodWriter->line("return [");
         $primaries = array_keys($this->getPrimaryKeyProperties());
         for ($c = 0, $s = count($primaries); $c < $s; $c++) {
@@ -158,7 +160,7 @@ class Entity
         }
         $methodWriter->line("];");
 
-        $methodWriter = $classWriter->method("setPk")->public()->void()->param("pk", new PrimitivePHPType(Primitive::ARRAY()));
+        $methodWriter = $classWriter->method("setPk")->public()->void()->paramPrimitive("pk", Primitive::ARRAY());
         foreach ($primaries as $field) {
             $methodWriter->line("\$this->$field = \$pk['$field'];");
         }
@@ -168,7 +170,7 @@ class Entity
         foreach ($this->properties as $field => $property) {
             $uField = StringUtils::firstCharToUpper($field);
             //TODO final
-            $getOrIs = $property->getType()->getterPrefix();
+            $getOrIs = TypeConverter::getterPrefix($property->getType());
             if (!$property->isAutoIncrement()) $classWriter->method('set' . $uField)->public()->param($field, $property->getType())->void()->line("\$this->$field = $$field;");
 
             $type = $property->getType();
@@ -205,14 +207,14 @@ class Entity
 
     public function toRepositoryBasePHPFile()
     {
-        $classWriter = (new ClassWriter("Base" . $this->name . "Repository"))->namespace($this->namespace)->extends(AClass::of("\\" . EntityRepository::class))->abstract();
+        $classWriter = (new ClassWriter("Base" . $this->name . "Repository"))->namespace($this->namespace)->extends(AClass::absolute(EntityRepository::class))->abstract();
 
-        $methodWriter = $classWriter->method("__construct")->public()->param("connection", new ClassPHPType(AClass::of("\\" . \PDO::class)), null);
+        $methodWriter = $classWriter->method("__construct")->public()->paramClass("connection", AClass::absolute(\PDO::class), null);
         $methodWriter->line("parent::__construct(");
         $methodWriter->line("    \$connection,");
-        $methodWriter->line("    " . (AClass::of("\\" . ANamespace::class))->write($classWriter) . "::absolute('" . $this->namespace->fullyQualified() . "'),");
+        $methodWriter->line("    " . $classWriter->print(AClass::absolute(ANamespace::class)) . "::absolute('" . $this->namespace->fullyQualified() . "'),");
         $methodWriter->line("    '$this->name',");
-        $methodWriter->line('    ' . $this->modelClass->write($classWriter) . '::getDatabase()');
+        $methodWriter->line('    ' . $classWriter->print($this->modelClass) . '::getDatabase()');
         $methodWriter->line(");");
 
 

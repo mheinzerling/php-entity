@@ -3,9 +3,7 @@ declare(strict_types = 1);
 namespace mheinzerling\entity\config;
 
 
-use mheinzerling\commons\database\structure\type\Type;
-use mheinzerling\entity\generator\ClassWriter;
-use mheinzerling\entity\generator\PHPType;
+use mheinzerling\meta\language\PHPType;
 use Seld\JsonLint\ParsingException;
 
 class LazyEntityEnumPHPType extends PHPType
@@ -33,21 +31,6 @@ class LazyEntityEnumPHPType extends PHPType
             return $type;
         }
         throw new ParsingException(">" . $this->type . "< is neither an entity nor an enum. If it is an other class use the full qualified name.");
-    }
-
-    public function toDatabaseType(int $length = null): Type
-    {
-        throw new \Exception("Unsupported operation");
-    }
-
-    public function toPHPDoc(ClassWriter $classWriter): string
-    {
-        throw new \Exception("Unsupported operation");
-    }
-
-    public function toPHP(ClassWriter $classWriter): string
-    {
-        throw new \Exception("Unsupported operation");
     }
 
     public function toOptional(): PHPType
