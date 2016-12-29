@@ -358,8 +358,8 @@ class TestModel
         if (self::$database == null) {
             self::$database = (new DatabaseBuilder(""))->defaultEngine("InnoDB")->defaultCharset("utf8mb4")->defaultCollation("utf8mb4_unicode_ci")
                 ->table("credential")->primary(["provider", "uid"])->foreign(["user"], "user", ["id"], ReferenceOption::CASCADE(), ReferenceOption::RESTRICT())
-                ->field("provider")->type(Type::varchar(255, ""))
-                ->field("uid")->type(Type::varchar(255, ""))
+                ->field("provider")->type(Type::varchar(150, ""))
+                ->field("uid")->type(Type::varchar(150, ""))
                 ->field("user")->type(Type::int())->null()
                 ->table("user")->unique(["nick"])->primary(["id"])
                 ->field("id")->type(Type::int())->autoincrement()

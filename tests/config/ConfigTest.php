@@ -12,13 +12,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $config = Config::loadFile(realpath(__DIR__ . "../../..") . "/resources/tests/entities.json");
+        $config = Config::loadFile(realpath(__DIR__ . "/../..") . "/resources/tests/entities.json");
         var_dump($config); //TODO assert and parse errors
     }
 
     public function testToDatabase()
     {
-        $config = Config::loadFile(realpath(__DIR__ . "../../..") . "/resources/tests/entities.json");
+        $config = Config::loadFile(realpath(__DIR__ . "/../..") . "/resources/tests/entities.json");
         $builder = new DatabaseBuilder("");
         $config->addTo($builder);
         $database = $builder->build();
@@ -32,8 +32,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
   PRIMARY KEY (`id`)
   );");
         $expected['500.1'] = str_replace("\r", "", "CREATE TABLE IF NOT EXISTS `credential` (
-  `provider` VARCHAR(255) NOT NULL,
-  `uid` VARCHAR(255) NOT NULL,
+  `provider` VARCHAR(150) NOT NULL,
+  `uid` VARCHAR(150) NOT NULL,
   `user` INT DEFAULT NULL,
   PRIMARY KEY (`provider`, `uid`),
   CONSTRAINT `fk_credential_user__user_id` FOREIGN KEY (`user`) REFERENCES `user` (`id`)

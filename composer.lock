@@ -104,12 +104,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-databaseutils.git",
-                "reference": "721db74c2ea1bbb14b0308c0df003ce4aac3e430"
+                "reference": "3bbe05619c763ce46b062d569662402157326afe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/721db74c2ea1bbb14b0308c0df003ce4aac3e430",
-                "reference": "721db74c2ea1bbb14b0308c0df003ce4aac3e430",
+                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/3bbe05619c763ce46b062d569662402157326afe",
+                "reference": "3bbe05619c763ce46b062d569662402157326afe",
                 "shasum": ""
             },
             "require": {
@@ -139,7 +139,7 @@
                 }
             ],
             "description": "Some useful utilities for database access and modification",
-            "time": "2016-12-28 13:32:13"
+            "time": "2016-12-29 16:52:54"
         },
         {
             "name": "mheinzerling/fileutils",
@@ -588,12 +588,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/codeclimate/php-test-reporter.git",
-                "reference": "0186c8eb03c677b64b9d23dc0cb5c9475553c7c5"
+                "reference": "0edc2e1b8ca47b74c326c925a6a0f083126a152d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codeclimate/php-test-reporter/zipball/0186c8eb03c677b64b9d23dc0cb5c9475553c7c5",
-                "reference": "0186c8eb03c677b64b9d23dc0cb5c9475553c7c5",
+                "url": "https://api.github.com/repos/codeclimate/php-test-reporter/zipball/0edc2e1b8ca47b74c326c925a6a0f083126a152d",
+                "reference": "0edc2e1b8ca47b74c326c925a6a0f083126a152d",
                 "shasum": ""
             },
             "require": {
@@ -646,7 +646,7 @@
                 "codeclimate",
                 "coverage"
             ],
-            "time": "2016-09-22 16:57:58"
+            "time": "2016-12-29 16:42:14"
         },
         {
             "name": "doctrine/instantiator",

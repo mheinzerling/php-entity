@@ -7,12 +7,12 @@
       "namespace": "\\mheinzerling\\test",
       "provider": {
         "type": "string",
-        "length": 255,
+        "length": 150,
         "primary": true
       },
       "uid": {
         "type": "string",
-        "length": 255,
+        "length": 150,
         "primary": true
       },
       "user": {
