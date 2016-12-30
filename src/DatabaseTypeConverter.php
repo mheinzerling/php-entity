@@ -22,8 +22,8 @@ class DatabaseTypeConverter
         if ($type instanceof PrimitivePHPType) {
             if ($type->isBool()) return new BoolType();
             else if ($type->isInt()) return new IntType(); //TODO size , tiny big etc
-            else if ($type->isString()) return new VarcharType($length); //TODO text etc
-            else    throw new \Exception("Unhandled primitiv " . $type->getToken());
+            else if ($type->isString()) return new VarcharType($length, "utf8mb4_unicode_ci"); //TODO collation etc
+            else throw new \Exception("Unhandled primitiv " . $type->getToken());
 
         } elseif ($type instanceof EntityPHPType) {
             $types = $type->getEntity()->getPrimaryKeyDatabaseTypes();
