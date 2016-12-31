@@ -64,12 +64,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-arrayutils.git",
-                "reference": "3a4bf2584564781f0bd3d0e880038e8da8cfcc11"
+                "reference": "ad2bd87ef43c010f9bb3139dc1ba7b5e7f7c3972"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-arrayutils/zipball/3a4bf2584564781f0bd3d0e880038e8da8cfcc11",
-                "reference": "3a4bf2584564781f0bd3d0e880038e8da8cfcc11",
+                "url": "https://api.github.com/repos/mheinzerling/php-arrayutils/zipball/ad2bd87ef43c010f9bb3139dc1ba7b5e7f7c3972",
+                "reference": "ad2bd87ef43c010f9bb3139dc1ba7b5e7f7c3972",
                 "shasum": ""
             },
             "require": {
@@ -96,7 +96,7 @@
                 }
             ],
             "description": "This is a small library collection array utilities.",
-            "time": "2016-12-15 14:02:22"
+            "time": "2016-12-30 15:18:29"
         },
         {
             "name": "mheinzerling/databaseutils",
@@ -104,12 +104,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-databaseutils.git",
-                "reference": "3bbe05619c763ce46b062d569662402157326afe"
+                "reference": "6bbf472edf22dd7d652e114e7f92709cd5281396"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/3bbe05619c763ce46b062d569662402157326afe",
-                "reference": "3bbe05619c763ce46b062d569662402157326afe",
+                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/6bbf472edf22dd7d652e114e7f92709cd5281396",
+                "reference": "6bbf472edf22dd7d652e114e7f92709cd5281396",
                 "shasum": ""
             },
             "require": {
@@ -139,7 +139,7 @@
                 }
             ],
             "description": "Some useful utilities for database access and modification",
-            "time": "2016-12-29 16:52:54"
+            "time": "2016-12-31 16:10:18"
         },
         {
             "name": "mheinzerling/fileutils",
@@ -147,15 +147,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-fileutils.git",
-                "reference": "22b22cde91d92983f27344e8a3ce25bf6d173415"
+                "reference": "b734a139146ac1b447b49c370342e5e482c13e76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-fileutils/zipball/22b22cde91d92983f27344e8a3ce25bf6d173415",
-                "reference": "22b22cde91d92983f27344e8a3ce25bf6d173415",
+                "url": "https://api.github.com/repos/mheinzerling/php-fileutils/zipball/b734a139146ac1b447b49c370342e5e482c13e76",
+                "reference": "b734a139146ac1b447b49c370342e5e482c13e76",
                 "shasum": ""
             },
             "require": {
+                "eloquent/enumeration": "^5.1.0",
                 "mheinzerling/stringutils": "dev-master",
                 "php": "^7.1.0"
             },
@@ -180,7 +181,7 @@
                 }
             ],
             "description": "File utils",
-            "time": "2016-12-15 19:12:39"
+            "time": "2016-12-30 16:18:10"
         },
         {
             "name": "mheinzerling/jsonutils",
@@ -188,12 +189,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-jsonutils.git",
-                "reference": "dea3bf52264034d2d7f84e7b43f13888f348f845"
+                "reference": "082ed15b75d89848b15f6b3396dd3ed5de207765"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-jsonutils/zipball/dea3bf52264034d2d7f84e7b43f13888f348f845",
-                "reference": "dea3bf52264034d2d7f84e7b43f13888f348f845",
+                "url": "https://api.github.com/repos/mheinzerling/php-jsonutils/zipball/082ed15b75d89848b15f6b3396dd3ed5de207765",
+                "reference": "082ed15b75d89848b15f6b3396dd3ed5de207765",
                 "shasum": ""
             },
             "require": {
@@ -223,7 +224,7 @@
                 }
             ],
             "description": "JSON utilities",
-            "time": "2016-12-28 13:34:03"
+            "time": "2016-12-30 15:52:04"
         },
         {
             "name": "mheinzerling/meta",
@@ -231,12 +232,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-meta.git",
-                "reference": "dee12231aeee788d29aef2a409d852bd061195c4"
+                "reference": "26cf637e5e7d9432966ece4f30a2c9e9a3fffd23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-meta/zipball/dee12231aeee788d29aef2a409d852bd061195c4",
-                "reference": "dee12231aeee788d29aef2a409d852bd061195c4",
+                "url": "https://api.github.com/repos/mheinzerling/php-meta/zipball/26cf637e5e7d9432966ece4f30a2c9e9a3fffd23",
+                "reference": "26cf637e5e7d9432966ece4f30a2c9e9a3fffd23",
                 "shasum": ""
             },
             "require": {
@@ -266,7 +267,7 @@
                 }
             ],
             "description": "Handle PHP language constructs (Class/Namespace) and generate PHP files.",
-            "time": "2016-12-29 16:39:06"
+            "time": "2016-12-31 15:36:15"
         },
         {
             "name": "mheinzerling/stringutils",
@@ -274,12 +275,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-stringutils.git",
-                "reference": "8c20b53fb3257f76d9cfa48f0eb217afc8ad9dcd"
+                "reference": "5a80f16dcc20e4f7b29089fc384f45b0f1edb845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-stringutils/zipball/8c20b53fb3257f76d9cfa48f0eb217afc8ad9dcd",
-                "reference": "8c20b53fb3257f76d9cfa48f0eb217afc8ad9dcd",
+                "url": "https://api.github.com/repos/mheinzerling/php-stringutils/zipball/5a80f16dcc20e4f7b29089fc384f45b0f1edb845",
+                "reference": "5a80f16dcc20e4f7b29089fc384f45b0f1edb845",
                 "shasum": ""
             },
             "require": {
@@ -306,7 +307,7 @@
                 }
             ],
             "description": "StringUtils class is similar to Apache Commons StringUtils for Java. It will be extended incrementally.",
-            "time": "2016-12-08 05:07:36"
+            "time": "2016-12-30 15:05:44"
         },
         {
             "name": "psr/log",

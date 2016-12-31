@@ -11,6 +11,7 @@ use mheinzerling\commons\database\structure\SqlSetting;
 use mheinzerling\commons\database\structure\type\Type;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
+use mheinzerling\commons\Separator;
 use mheinzerling\meta\language\AClass;
 use mheinzerling\meta\language\Primitive;
 use mheinzerling\meta\writer\ClassWriter;
@@ -146,7 +147,7 @@ class Config
             $files += $e->generateFiles($this->src);
         }
 
-        $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $this->modelClass->getNamespace()->fullyQualified()), FileUtils::UNIX);
+        $gensrc = FileUtils::to(FileUtils::append($this->gensrc, $this->modelClass->getNamespace()->fullyQualified()), Separator::UNIX());
         $files[FileUtils::append($gensrc, ucfirst($this->modelClass->simple()) . ".php")] = ["content" => $this->toModelPHPFile(), 'overwrite' => true];
         return $files;
     }

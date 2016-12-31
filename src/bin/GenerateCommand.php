@@ -45,13 +45,11 @@ class GenerateCommand extends Command
             $fullFile = FileUtils::append($root, $path);
             if (!file_exists($fullFile) || $file['overwrite'] == true || $force) {
                 $output->writeln("[   WRITE] " . $path);
-                FileUtils::createFile($fullFile, $file['content']);
+                FileUtils::createFile($fullFile, $file['content'], 0777); //TODO lower rights
             } else {
                 $output->writeln("[    SKIP] " . $path);
             }
         }
         return 0;
     }
-
-
 }

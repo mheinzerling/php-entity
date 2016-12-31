@@ -7,6 +7,7 @@ namespace mheinzerling\entity\config;
 use Eloquent\Enumeration\AbstractEnumeration;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
+use mheinzerling\commons\Separator;
 use mheinzerling\meta\language\AClass;
 use mheinzerling\meta\language\ANamespace;
 use mheinzerling\meta\writer\ClassWriter;
@@ -68,11 +69,9 @@ class Enum
 
     public function generateFiles(string $src): array
     {
-        $src = FileUtils::to(FileUtils::append($src, $this->namespace->fullyQualified()), FileUtils::UNIX);
+        $src = FileUtils::to(FileUtils::append($src, $this->namespace->fullyQualified()), Separator::UNIX());
         $files[FileUtils::append($src, ucfirst($this->name) . ".php")] = ["content" => $this->toPHPFile(), 'overwrite' => false];
         return $files;
     }
-
-
 
 }

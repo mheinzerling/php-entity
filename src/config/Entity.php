@@ -8,6 +8,7 @@ use mheinzerling\commons\database\structure\builder\DatabaseBuilder;
 use mheinzerling\commons\database\structure\type\Type;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
+use mheinzerling\commons\Separator;
 use mheinzerling\commons\StringUtils;
 use mheinzerling\entity\DatabaseTypeConverter;
 use mheinzerling\entity\orm\EntityRepository;
@@ -243,8 +244,8 @@ class Entity
 
     public function generateFiles(string $src, string $gensrc): array
     {
-        $src = FileUtils::to(FileUtils::append($src, $this->namespace->fullyQualified()), FileUtils::UNIX);
-        $gensrc = FileUtils::to(FileUtils::append($gensrc, $this->namespace->fullyQualified()), FileUtils::UNIX);
+        $src = FileUtils::to(FileUtils::append($src, $this->namespace->fullyQualified()), Separator::UNIX());
+        $gensrc = FileUtils::to(FileUtils::append($gensrc, $this->namespace->fullyQualified()), Separator::UNIX());
         $files = [];
         $name = ucfirst($this->name);
         $files[FileUtils::append($src, $name . ".php")] = ["content" => $this->toEntityPHPFile(), 'overwrite' => false];
