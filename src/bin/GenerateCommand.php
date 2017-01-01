@@ -40,8 +40,6 @@ class GenerateCommand extends Command
         $config = Config::loadFile($file);
         $files = $config->generateFiles();
         foreach ($files as $path => $file) {
-
-
             $fullFile = FileUtils::append($root, $path);
             if (!file_exists($fullFile) || $file['overwrite'] == true || $force) {
                 $output->writeln("[   WRITE] " . $path);

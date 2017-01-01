@@ -73,12 +73,12 @@ abstract class EntityRepository
 
                 if (count($pks) != 1) throw new \Exception("Can't map foreign key to composed primary keys :" . implode(',', $pks)); //TODO
                 return $repo->get($value, reset($pks));
-            } elseif (is_subclass_of($value, AbstractEnumeration::class)) {
+            } else if (is_subclass_of($value, AbstractEnumeration::class)) {
                 /**
                  * @var $value AbstractEnumeration
                  */
                 return $value->value();
-            } elseif ($value instanceof \DateTime) {
+            } else if ($value instanceof \DateTime) {
                 return $value->format("Y-m-d H:i:s");
             } else {
                 throw new \Exception("Missing database mapping for key " . $fieldName . " with type :" . get_class($value)); //TODO

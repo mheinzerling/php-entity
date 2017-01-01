@@ -22,18 +22,18 @@ class InjectionConverter
             $methodWriter->line("    \$this->$fieldName = new $entity();");
             $methodWriter->line("    \$this->" . $fieldName . "->setPrimary(\$primary);");
             $methodWriter->line("}");
-        } elseif ($type instanceof EnumPHPType) {
+        } else if ($type instanceof EnumPHPType) {
             $enum = $methodWriter->getClassWriter()->print($type->getClass());;
             $methodWriter->line("if (!\$this->$fieldName instanceof " . $enum . " && \$this->$fieldName != null) {");
             $methodWriter->line("    \$this->$fieldName = " . $enum . "::memberByValue(strtoupper(\$this->$fieldName));");
             $methodWriter->line("}");
-        } elseif ($type instanceof ClassPHPType) {
+        } else if ($type instanceof ClassPHPType) {
             if ($type->getClass() == AClass::absolute(\DateTime::class)) {
                 $methodWriter->line("if (!\$this->$fieldName instanceof \\DateTime && \$this->$fieldName != null) {");
                 $methodWriter->line("    \$this->$fieldName = new \\DateTime(\$this->$fieldName);");
                 $methodWriter->line("}");
             }
-        } elseif ($type instanceof PrimitivePHPType) {
+        } else if ($type instanceof PrimitivePHPType) {
             if ($type->isInt()) {
                 $methodWriter->line("\$this->$fieldName = intval(\$this->$fieldName);");
             } else if ($type->isBool()) {

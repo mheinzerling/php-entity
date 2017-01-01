@@ -9,7 +9,6 @@ abstract class Entity
 
     protected function __construct()
     {
-
     }
 
     protected function fetchFromDatabase()
