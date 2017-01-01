@@ -22,6 +22,10 @@ Simple ORM
     optional    -> NULL vs NOT NULL
     auto        -> AUTO_INCREMENT
     primary     -> default
+    
+##Example
+
+See `resources/tests/entities.json` and `build.xml gen`. The parser will tell you invalid configurations.
 
 ##Changelog
 
