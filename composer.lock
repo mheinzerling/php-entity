@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2a20013f63039acc78ec1a689d27a5f5",
-    "content-hash": "fe7e1963d01790e8b1f391d2c7159f8b",
+    "hash": "ce503ec5f84c2e1d4b4872b6e2fe8f3b",
+    "content-hash": "815f65e10357d79c5dbf5727daeff751",
     "packages": [
         {
             "name": "eloquent/enumeration",
@@ -60,7 +60,7 @@
         },
         {
             "name": "mheinzerling/arrayutils",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-arrayutils.git",
@@ -100,22 +100,22 @@
         },
         {
             "name": "mheinzerling/databaseutils",
-            "version": "dev-master",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-databaseutils.git",
-                "reference": "6bbf472edf22dd7d652e114e7f92709cd5281396"
+                "reference": "50e1df7684726735b3a973b98b790e30620c54db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/6bbf472edf22dd7d652e114e7f92709cd5281396",
-                "reference": "6bbf472edf22dd7d652e114e7f92709cd5281396",
+                "url": "https://api.github.com/repos/mheinzerling/php-databaseutils/zipball/50e1df7684726735b3a973b98b790e30620c54db",
+                "reference": "50e1df7684726735b3a973b98b790e30620c54db",
                 "shasum": ""
             },
             "require": {
                 "eloquent/enumeration": "^5.1.0",
-                "mheinzerling/arrayutils": "dev-master",
-                "mheinzerling/stringutils": "dev-master",
+                "mheinzerling/arrayutils": "^1.0.0",
+                "mheinzerling/stringutils": "^3.0.0",
                 "php": "^7.1.0"
             },
             "require-dev": {
@@ -139,25 +139,25 @@
                 }
             ],
             "description": "Some useful utilities for database access and modification",
-            "time": "2016-12-31 16:10:18"
+            "time": "2016-12-31 16:22:15"
         },
         {
             "name": "mheinzerling/fileutils",
-            "version": "dev-master",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-fileutils.git",
-                "reference": "b734a139146ac1b447b49c370342e5e482c13e76"
+                "reference": "c347b5825707e48ba805359ec5f93aa59031bb92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-fileutils/zipball/b734a139146ac1b447b49c370342e5e482c13e76",
-                "reference": "b734a139146ac1b447b49c370342e5e482c13e76",
+                "url": "https://api.github.com/repos/mheinzerling/php-fileutils/zipball/c347b5825707e48ba805359ec5f93aa59031bb92",
+                "reference": "c347b5825707e48ba805359ec5f93aa59031bb92",
                 "shasum": ""
             },
             "require": {
                 "eloquent/enumeration": "^5.1.0",
-                "mheinzerling/stringutils": "dev-master",
+                "mheinzerling/stringutils": "^3.0.0",
                 "php": "^7.1.0"
             },
             "require-dev": {
@@ -181,11 +181,11 @@
                 }
             ],
             "description": "File utils",
-            "time": "2016-12-30 16:18:10"
+            "time": "2016-12-30 16:27:00"
         },
         {
             "name": "mheinzerling/jsonutils",
-            "version": "dev-master",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-jsonutils.git",
@@ -228,22 +228,22 @@
         },
         {
             "name": "mheinzerling/meta",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-meta.git",
-                "reference": "26cf637e5e7d9432966ece4f30a2c9e9a3fffd23"
+                "reference": "4ba93dfc3a1478c232403d2c5138cfe5f0e30b0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mheinzerling/php-meta/zipball/26cf637e5e7d9432966ece4f30a2c9e9a3fffd23",
-                "reference": "26cf637e5e7d9432966ece4f30a2c9e9a3fffd23",
+                "url": "https://api.github.com/repos/mheinzerling/php-meta/zipball/4ba93dfc3a1478c232403d2c5138cfe5f0e30b0e",
+                "reference": "4ba93dfc3a1478c232403d2c5138cfe5f0e30b0e",
                 "shasum": ""
             },
             "require": {
                 "eloquent/enumeration": "^5.1.0",
-                "mheinzerling/fileutils": "dev-master",
-                "mheinzerling/stringutils": "dev-master",
+                "mheinzerling/fileutils": "^3.0.0",
+                "mheinzerling/stringutils": "^3.0.0",
                 "php": "^7.1.0"
             },
             "require-dev": {
@@ -267,11 +267,11 @@
                 }
             ],
             "description": "Handle PHP language constructs (Class/Namespace) and generate PHP files.",
-            "time": "2016-12-31 15:36:15"
+            "time": "2016-12-31 16:18:31"
         },
         {
             "name": "mheinzerling/stringutils",
-            "version": "dev-master",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mheinzerling/php-stringutils.git",
@@ -2438,12 +2438,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "mheinzerling/stringutils": 20,
-        "mheinzerling/fileutils": 20,
-        "mheinzerling/databaseutils": 20,
-        "mheinzerling/arrayutils": 20,
-        "mheinzerling/jsonutils": 20,
-        "mheinzerling/meta": 20,
         "codeclimate/php-test-reporter": 20
     },
     "prefer-stable": false,
