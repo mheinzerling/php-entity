@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace mheinzerling\entity\config;
 
 use mheinzerling\meta\language\AClass;
@@ -9,8 +10,6 @@ use mheinzerling\meta\writer\MethodWriter;
 
 class InjectionConverter
 {
-
-
     public static function fixInjection(PHPType $type, string $fieldName, MethodWriter $methodWriter): void
     {
         if ($type instanceof EntityPHPType) {
@@ -19,9 +18,9 @@ class InjectionConverter
             $primary = $primaries[0];
             $entity = $methodWriter->getClassWriter()->print($type->getClass());
             $methodWriter->line("if (!\$this->$fieldName instanceof " . $entity . " && \$this->$fieldName != null) {");
-            $methodWriter->line("    \$pk = ['$primary' => intval(\$this->$fieldName)];");
+            $methodWriter->line("    \$primary = ['$primary' => intval(\$this->$fieldName)];");
             $methodWriter->line("    \$this->$fieldName = new $entity();");
-            $methodWriter->line("    \$this->" . $fieldName . "->setPk(\$pk);");
+            $methodWriter->line("    \$this->" . $fieldName . "->setPrimary(\$primary);");
             $methodWriter->line("}");
         } elseif ($type instanceof EnumPHPType) {
             $enum = $methodWriter->getClassWriter()->print($type->getClass());;

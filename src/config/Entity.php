@@ -152,7 +152,7 @@ class Entity
             $property->fixInjection($methodWriter);
         }
 
-        $methodWriter = $classWriter->method("getPk")->public()->returnPrimitive(Primitive::ARRAY());
+        $methodWriter = $classWriter->method("getPrimary")->public()->returnPrimitive(Primitive::ARRAY());
         $methodWriter->line("return [");
         $primaries = array_keys($this->getPrimaryKeyProperties());
         for ($c = 0, $s = count($primaries); $c < $s; $c++) {
@@ -161,9 +161,9 @@ class Entity
         }
         $methodWriter->line("];");
 
-        $methodWriter = $classWriter->method("setPk")->public()->void()->paramPrimitive("pk", Primitive::ARRAY());
+        $methodWriter = $classWriter->method("setPrimary")->public()->void()->paramPrimitive("primary", Primitive::ARRAY());
         foreach ($primaries as $field) {
-            $methodWriter->line("\$this->$field = \$pk['$field'];");
+            $methodWriter->line("\$this->$field = \$primary['$field'];");
         }
         $methodWriter->line("\$this->loaded = false;");
 

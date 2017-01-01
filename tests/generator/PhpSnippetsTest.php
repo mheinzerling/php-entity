@@ -159,13 +159,13 @@ abstract class BaseCredential extends Entity
     {
         parent::__construct();
         if (!$this->user instanceof User && $this->user != null) {
-            $pk = [\'id\' => intval($this->user)];
+            $primary = [\'id\' => intval($this->user)];
             $this->user = new User();
-            $this->user->setPk($pk);
+            $this->user->setPrimary($primary);
         }
     }
 
-    public function getPk(): array
+    public function getPrimary(): array
     {
         return [
             \'provider\' => $this->provider,
@@ -173,10 +173,10 @@ abstract class BaseCredential extends Entity
         ];
     }
 
-    public function setPk(array $pk): void
+    public function setPrimary(array $primary): void
     {
-        $this->provider = $pk[\'provider\'];
-        $this->uid = $pk[\'uid\'];
+        $this->provider = $primary[\'provider\'];
+        $this->uid = $primary[\'uid\'];
         $this->loaded = false;
     }
 
@@ -265,16 +265,16 @@ abstract class BaseUser extends Entity
         }
     }
 
-    public function getPk(): array
+    public function getPrimary(): array
     {
         return [
             \'id\' => $this->id
         ];
     }
 
-    public function setPk(array $pk): void
+    public function setPrimary(array $primary): void
     {
-        $this->id = $pk[\'id\'];
+        $this->id = $primary[\'id\'];
         $this->loaded = false;
     }
 

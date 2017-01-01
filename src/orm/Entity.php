@@ -18,15 +18,15 @@ abstract class Entity
          * @var $repo EntityRepository
          */
         $repo = (new \ReflectionClass(get_class($this) . "Repository"))->newInstance();
-        $entity = $repo->fetchByPk($this->getPk());
+        $entity = $repo->fetchByPk($this->getPrimary());
         foreach (get_object_vars($entity) as $key => $value) {
             $this->$key = $value;
         }
     }
 
-    protected abstract function getPk(): array;
+    protected abstract function getPrimary(): array;
 
-    protected abstract function setPk(array $pk): void;
+    protected abstract function setPrimary(array $primary): void;
 
     protected function load()
     {
