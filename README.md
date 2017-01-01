@@ -6,7 +6,7 @@ Simple ORM
 
 ##Composer
     "require": {
-        "mheinzerling/entity": "^3.0.0"
+        "mheinzerling/entity": "^3.0.1"
     },
     
 ##Types

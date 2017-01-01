@@ -12,6 +12,7 @@ use mheinzerling\commons\database\structure\type\Type;
 use mheinzerling\commons\FileUtils;
 use mheinzerling\commons\JsonUtils;
 use mheinzerling\commons\Separator;
+use mheinzerling\commons\StringUtils;
 use mheinzerling\meta\language\AClass;
 use mheinzerling\meta\language\Primitive;
 use mheinzerling\meta\writer\ClassWriter;
@@ -96,16 +97,17 @@ class Config
         //TODO 4 new properties
         $classWriter = (new ClassWriter($this->modelClass->simple()))->namespace($this->modelClass->getNamespace());
 
-        $classWriter->use(AClass::absolute(DatabaseBuilder::class));
-        $classWriter->use(AClass::absolute(ReferenceOption::class));
-        $classWriter->use(AClass::absolute(Type::class));
-
         $classWriter->field("database")->private()->static()->class(AClass::absolute(Database::class));
         $methodWriter = $classWriter->method("getDatabase")->public()->static()->returnClass(AClass::absolute(Database::class));
         $dbBuilder = new DatabaseBuilder("");
         $this->addTo($dbBuilder);
         $builderCode = $dbBuilder->build()->toBuilderCode("InnoDB", "utf8mb4", "utf8mb4_unicode_ci");
         $methodWriter->line("if (self::\$database == null) {");
+
+        $classWriter->use(AClass::absolute(DatabaseBuilder::class));
+        if (StringUtils::contains($builderCode, "ReferenceOption::")) $classWriter->use(AClass::absolute(ReferenceOption::class));
+        if (StringUtils::contains($builderCode, "Type::")) $classWriter->use(AClass::absolute(Type::class));
+
         $methodWriter->line("    self::\$database = " . str_replace("\n", "\n            ", $builderCode . ";"));
         $methodWriter->line("}");
         $methodWriter->line("return self::\$database;");
@@ -131,6 +133,7 @@ class Config
         $methodWriter->line('    $pdo->exec($statement);');
         $methodWriter->line('}');
         $methodWriter->line('$pdo->commit();');
+
         return $methodWriter->write();
     }
 
