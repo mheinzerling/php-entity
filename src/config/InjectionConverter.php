@@ -25,7 +25,7 @@ class InjectionConverter
         } else if ($type instanceof EnumPHPType) {
             $enum = $methodWriter->getClassWriter()->print($type->getClass());;
             $methodWriter->line("if (!\$this->$fieldName instanceof " . $enum . " && \$this->$fieldName != null) {");
-            $methodWriter->line("    \$this->$fieldName = " . $enum . "::memberByValue(strtoupper(\$this->$fieldName));");
+            $methodWriter->line("    \$this->$fieldName = " . $enum . "::memberByKey(\$this->$fieldName);");
             $methodWriter->line("}");
         } else if ($type instanceof ClassPHPType) {
             if ($type->getClass() == AClass::absolute(\DateTime::class)) {

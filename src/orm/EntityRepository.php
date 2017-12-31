@@ -77,7 +77,7 @@ abstract class EntityRepository
                 /**
                  * @var $value AbstractEnumeration
                  */
-                return $value->value();
+                return $value->key();
             } else if ($value instanceof \DateTime) {
                 return $value->format("Y-m-d H:i:s");
             } else {

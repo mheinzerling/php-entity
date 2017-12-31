@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace mheinzerling\entity\config;
 
@@ -49,10 +49,8 @@ class Enum
         $writer = (new ClassWriter($this->name))->extends(AClass::absolute(AbstractEnumeration::class))
             ->namespace($this->namespace)->final();
         foreach ($this->values as $key => $value) {
-            $key = strtoupper($key);
-            $value = strtoupper($value);
-            $writer->doc("@method static $this->name $value()");
-            $writer->const($value, $key);
+            $writer->doc("@method static $this->name $key()");
+            $writer->const($key, $value);
         }
         return $writer->write();
     }
